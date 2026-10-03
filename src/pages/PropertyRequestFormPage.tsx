@@ -211,23 +211,15 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
 
       {/* Property Number / Reference Lookup */}
       <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-neutral-100 pb-3">
+        <div className="border-b border-neutral-100 pb-3">
           <div className="space-y-0.5">
             <h2 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
               Property Number / Reference Lookup
             </h2>
             <p className="text-xs text-neutral-500">
-              Enter a registered property number (e.g. KP-PARIS-001) or browse the portfolio database to auto-populate pricing, square footage, and property descriptions.
+              Enter a registered property number (e.g. KP-PARIS-001) to auto-populate pricing, square footage, and property descriptions.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowPropertySelector(true)}
-            className="px-3.5 py-2 rounded-lg bg-white border border-black text-black font-semibold text-xs hover:bg-neutral-50 transition shrink-0 flex items-center gap-2"
-          >
-            <Building className="w-4 h-4" />
-            Browse Portfolio Database
-          </button>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-3">
