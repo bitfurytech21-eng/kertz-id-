@@ -11,9 +11,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-16 pb-20 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+      {/* Hero Section with Animated Luxury Architecture Background */}
+      <section className="relative overflow-hidden bg-slate-950 text-white pt-20 pb-24 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
+        {/* Animated Background Picture & Light Effects */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=80"
+            alt="Kretz Private Luxury Architecture"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center animate-hero-bg scale-105 opacity-30 filter brightness-75 contrast-125"
+          />
+          {/* Deep Slate Vignette & Gradient Overlays for Readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/85" />
+          <div className="absolute inset-0 bg-radial-[circle_at_center,_transparent_0%,_rgba(2,6,23,0.85)_80%]" />
+
+          {/* Ambient Warm Golden & Azure Light Glows */}
+          <div className="absolute -top-20 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl animate-ambient-glow" />
+          <div className="absolute -bottom-20 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-ambient-glow [animation-delay:4s]" />
+
+          {/* Subtle Geometric Blueprint Grid Overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-amber-400 text-xs font-mono">
             <Lock className="w-3.5 h-3.5" />
             Confidential Legal Acquisition Workspace for Kretz Buyers

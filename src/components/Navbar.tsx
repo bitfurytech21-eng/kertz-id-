@@ -16,12 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
       {/* Top Security Banner */}
       <div className="bg-neutral-950 px-4 py-1 text-[11px] font-mono border-b border-neutral-800 flex items-center justify-between text-neutral-400">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 text-white font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            AES-256 ENCRYPTED
-          </span>
-          <span className="hidden sm:inline text-neutral-700">|</span>
-          <span className="hidden sm:inline">Zero-Knowledge Private Transaction Vault</span>
+          <span>Zero-Knowledge Private Transaction Vault</span>
         </div>
 
         <div className="flex items-center gap-3 text-[11px]">
@@ -190,22 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 </button>
               </div>
             </>
-          ) : (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => navigate('/login')}
-                className="px-3.5 py-1.5 text-xs font-medium text-neutral-300 hover:text-white transition-colors"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => navigate('/register')}
-                className="px-4 py-1.5 text-xs font-bold text-black bg-white border border-white hover:bg-neutral-200 rounded transition-colors"
-              >
-                Register
-              </button>
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+@keyframes heroZoom {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate3d(0, -12px, 0);
+  }
+  100% {
+    transform: scale(1.04) translate3d(8px, 6px, 0);
+  }
+}
+
+@keyframes ambientGlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.15) translate3d(20px, -15px, 0);
+  }
+}
+
+.animate-hero-bg {
+  animation: heroZoom 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-ambient-glow {
+  animation: ambientGlow 12s ease-in-out infinite;
+  will-change: transform, opacity;
+}
