@@ -40,13 +40,28 @@ function Router() {
     window.scrollTo(0, 0);
   };
 
-  if (isLoading) {
+  const [forceReady, setForceReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setForceReady(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading && !forceReady) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-amber-400 font-mono text-xs">
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-amber-400 font-mono text-xs space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
           <span>INITIALIZING ENCRYPTED LEGAL VAULT...</span>
         </div>
+        <button
+          onClick={() => setForceReady(true)}
+          className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition"
+        >
+          Proceed to Sign In &rarr;
+        </button>
       </div>
     );
   }
