@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Save, Send, Shield, AlertCircle, ArrowLeft, CheckCircle2, Sparkles, FolderLock } from 'lucide-react';
+import { Building, Save, Send, Shield, AlertCircle, ArrowLeft, CheckCircle2, Sparkles, FolderLock, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { PropertyRequest, KretzProperty } from '../types';
@@ -248,6 +248,28 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
           </button>
         </div>
       </div>
+
+      {/* Skeleton Loading Indicator during Property Fetch & Data Synchronization */}
+      {loading && (
+        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs space-y-4 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="h-4 bg-neutral-200 rounded w-48"></div>
+            <div className="h-4 bg-neutral-200 rounded w-28"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+            <div className="h-32 bg-neutral-100 rounded-lg"></div>
+            <div className="md:col-span-2 space-y-3">
+              <div className="h-5 bg-neutral-200 rounded w-3/4"></div>
+              <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
+              <div className="h-12 bg-neutral-100 rounded w-full"></div>
+            </div>
+          </div>
+          <div className="text-center py-2 text-xs text-neutral-600 font-medium flex items-center justify-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-black" />
+            Synchronizing property details & syncing essential data points (pricing, square footage, descriptions) from kretz.site...
+          </div>
+        </div>
+      )}
 
       {/* Selected Matched Property Preview */}
       {selectedProperty && (
