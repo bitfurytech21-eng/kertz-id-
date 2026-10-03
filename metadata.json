@@ -1,0 +1,6 @@
+{
+  "name": "Kretz Legal Property Workspace",
+  "description": "Secure legal property transaction and due diligence workspace for Kretz buyers. Private legal reviews, encrypted documents, escrow payments, and closing management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
