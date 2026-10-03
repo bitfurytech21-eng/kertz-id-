@@ -34,10 +34,31 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
 
   const [selectedProperty, setSelectedProperty] = useState<KretzProperty | null>(null);
   const [showPropertySelector, setShowPropertySelector] = useState(false);
+  const [propertyNumberInput, setPropertyNumberInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState<string | null>(null);
+
+  const handlePropertyNumberLookup = async () => {
+    if (!propertyNumberInput.trim()) return;
+    setError(null);
+    setSavedSuccess(null);
+    setLoading(true);
+    try {
+      const res = await api.properties.get(propertyNumberInput.trim());
+      if (res.property) {
+        handleSelectKretzProperty(res.property);
+        setSavedSuccess(`Property ${res.property.id} (${res.property.name}) loaded successfully from database.`);
+      } else {
+        setError('Property number not found in database. Please check the property reference (e.g. KP-PARIS-001).');
+      }
+    } catch (err: any) {
+      setError('Failed to fetch property: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (requestId) {
@@ -188,28 +209,44 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
         </div>
       </div>
 
-      {/* Portfolio Picker Callout */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-5 shadow-md text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span className="text-xs font-serif font-bold text-amber-300">
-              kretz.site Registered Portfolio Integration
-            </span>
+      {/* Property Number / Reference Lookup */}
+      <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-neutral-100 pb-3">
+          <div className="space-y-0.5">
+            <h2 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
+              Property Number / Reference Lookup
+            </h2>
+            <p className="text-xs text-neutral-500">
+              Enter a registered property number (e.g. KP-PARIS-001) or browse the portfolio database to auto-populate pricing, square footage, and property descriptions.
+            </p>
           </div>
-          <p className="text-xs text-slate-300">
-            Browse verified luxury properties (Paris Hôtels Particuliers, French Riviera Waterfronts, Alpine Chalets, Manhattan Penthouses) with title dossiers ready.
-          </p>
+          <button
+            type="button"
+            onClick={() => setShowPropertySelector(true)}
+            className="px-3.5 py-2 rounded-lg bg-white border border-black text-black font-semibold text-xs hover:bg-neutral-50 transition shrink-0 flex items-center gap-2"
+          >
+            <Building className="w-4 h-4" />
+            Browse Portfolio Database
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowPropertySelector(true)}
-          className="px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition shrink-0 flex items-center gap-2"
-        >
-          <Building className="w-4 h-4" />
-          {selectedProperty ? 'Change Registered Property' : 'Select from Kretz Portfolio'}
-        </button>
+        <div className="flex flex-col sm:flex-row items-center gap-3">
+          <input
+            type="text"
+            value={propertyNumberInput}
+            onChange={(e) => setPropertyNumberInput(e.target.value)}
+            placeholder="Enter property number (e.g. KP-PARIS-001, KP-ANTIBES-002)..."
+            className="w-full flex-1 px-3.5 py-2.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-black font-mono"
+          />
+          <button
+            type="button"
+            onClick={handlePropertyNumberLookup}
+            disabled={loading}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-black text-white font-bold text-xs hover:bg-neutral-800 transition shrink-0"
+          >
+            {loading ? 'Fetching...' : 'Fetch Property Details'}
+          </button>
+        </div>
       </div>
 
       {/* Selected Matched Property Preview */}
