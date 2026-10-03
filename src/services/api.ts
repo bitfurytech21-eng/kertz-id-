@@ -172,6 +172,12 @@ export const api = {
       return request<{ property: KretzProperty }>(`/api/properties/${encodeURIComponent(id)}`);
     },
 
+    syncFromKretz: async () => {
+      return request<{ message: string; properties_count: number; properties: KretzProperty[] }>('/api/properties/sync-kretz', {
+        method: 'POST',
+      });
+    },
+
     matchToRequest: async (requestId: string, propertyId: string) => {
       return request<{ message: string; request: PropertyRequest; property: KretzProperty }>(
         `/api/property-requests/${encodeURIComponent(requestId)}/match-property`,

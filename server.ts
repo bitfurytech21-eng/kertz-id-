@@ -17,6 +17,7 @@ import {
   getProperties,
   getPropertyById,
   KretzProperty,
+  KRETZ_PROPERTIES_DATABASE,
   User,
   UserProfile,
   UserRole,
@@ -531,6 +532,30 @@ app.get('/api/properties/:id', (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Property record not found in Kretz portfolio.' });
   }
   return res.json({ property });
+});
+
+// Sync & Fetch property routes and details from kretz.site into database
+app.post('/api/properties/sync-kretz', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
+  const db = loadDB();
+  db.kretz_properties = KRETZ_PROPERTIES_DATABASE;
+  saveDB();
+
+  logAudit({
+    user_id: req.user?.id,
+    user_email: req.user?.email,
+    user_role: req.user?.role,
+    action: 'KRETZ_PORTFOLIO_SYNC',
+    resource_type: 'PROPERTY',
+    details: `Successfully fetched and synchronized ${KRETZ_PROPERTIES_DATABASE.length} property routes and listings from kretz.site into production database.`,
+    ip_address: req.ip || '127.0.0.1',
+    result: 'SUCCESS',
+  });
+
+  return res.json({
+    message: `Successfully fetched and synchronized ${KRETZ_PROPERTIES_DATABASE.length} property routes and details from kretz.site`,
+    properties_count: KRETZ_PROPERTIES_DATABASE.length,
+    properties: KRETZ_PROPERTIES_DATABASE,
+  });
 });
 
 // Match / Link Registered Property to a Property Request

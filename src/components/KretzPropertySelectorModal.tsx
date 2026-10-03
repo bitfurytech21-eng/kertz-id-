@@ -32,10 +32,24 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
 }) => {
   const [properties, setProperties] = useState<KretzProperty[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [countryFilter, setCountryFilter] = useState('All');
   const [previewProperty, setPreviewProperty] = useState<KretzProperty | null>(null);
+
+  const handleSyncKretz = async () => {
+    setSyncing(true);
+    try {
+      const res = await api.properties.syncFromKretz();
+      setProperties(res.properties || []);
+      alert(res.message);
+    } catch (err: any) {
+      alert('Sync failed: ' + err.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -140,6 +154,16 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
                 </option>
               ))}
             </select>
+
+            <button
+              type="button"
+              onClick={handleSyncKretz}
+              disabled={syncing}
+              className="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {syncing ? 'Syncing Routes...' : 'Fetch Routes from kretz.site'}
+            </button>
           </div>
         </div>
 
