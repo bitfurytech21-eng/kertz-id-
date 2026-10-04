@@ -192,8 +192,16 @@ export const api = {
       return request<{ properties: KretzProperty[]; total: number }>(`/api/properties${qs ? `?${qs}` : ''}`);
     },
 
+    lookup: async (query: string) => {
+      const q = new URLSearchParams({ query });
+      return request<{ property: KretzProperty }>(`/api/properties/lookup?${q.toString()}`);
+    },
+
     get: async (id: string) => {
-      return request<{ property: KretzProperty }>(`/api/properties/${encodeURIComponent(id)}`);
+      // First try dedicated lookup which gracefully handles URLs, slashes, and complex slugs
+      return request<{ property: KretzProperty }>(`/api/properties/lookup?query=${encodeURIComponent(id)}`).catch(() => {
+        return request<{ property: KretzProperty }>(`/api/properties/${encodeURIComponent(id)}`);
+      });
     },
 
     syncFromKretz: async () => {

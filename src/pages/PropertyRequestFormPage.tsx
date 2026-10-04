@@ -40,59 +40,90 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
   const [error, setError] = useState<string | null>(null);
   const [savedSuccess, setSavedSuccess] = useState<string | null>(null);
 
-  const parsePropertyLookupValue = (raw: string): string | null => {
+  const parsePropertyLookupValue = (raw: string): string => {
     const value = raw.trim();
-    if (!value) return null;
+    if (!value) return '';
 
-    const patterns = [
-      /(?:https?:\/\/)?(?:www\.)?kretz\.site\/(?:#\/)?annonce\/([^/?#]+)/i,
-      /(?:https?:\/\/)?(?:www\.)?kretz\.site\/(?:#\/)?property\/([^/?#]+)/i,
-      /(?:https?:\/\/)?(?:www\.)?kretz\.site\/(?:#\/)?([^/?#]+)/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = value.match(pattern);
-      if (match?.[1]) {
-        return decodeURIComponent(match[1]);
-      }
+    // Handle full kretz.site URLs (with hash or direct, and tour URLs)
+    // e.g. https://kretz.site/#/annonce/kp1-11270b/bastide
+    // e.g. https://kretz.site/kretz-tour/en/annonce/kp1-11270b/bastide/
+    const urlPattern = /(?:https?:\/\/[^/]+)?(?:\/#)?(?:\/)?(?:kretz-tour\/[a-z]{2}\/)?(?:annonce|property)\/([^?#\s]+)/i;
+    const match = value.match(urlPattern);
+    if (match?.[1]) {
+      return decodeURIComponent(match[1]).replace(/\/+$/, '');
     }
 
     return value;
   };
 
   const handlePropertyNumberLookup = async () => {
-    const lookupValue = parsePropertyLookupValue(propertyNumberInput);
-    if (!lookupValue) {
+    const rawInput = propertyNumberInput.trim();
+    if (!rawInput) {
       setError('Please enter a property reference, slug, or kretz.site URL.');
       return;
     }
 
+    const lookupValue = parsePropertyLookupValue(rawInput);
     setError(null);
     setSavedSuccess(null);
     setLoading(true);
 
     try {
-      const directRes = await api.properties.get(lookupValue).catch(() => null);
+      let property: KretzProperty | null = null;
+
+      // 1. Dedicated lookup with parsed lookupValue
+      const directRes = await api.properties.lookup(lookupValue).catch(() => null);
       if (directRes?.property) {
-        handleSelectKretzProperty(directRes.property);
-        setSavedSuccess(`Property ${directRes.property.id} (${directRes.property.name}) loaded successfully from the Kretz portfolio.`);
-        return;
+        property = directRes.property;
       }
 
-      const listRes = await api.properties.list({ search: lookupValue });
-      const property =
-        listRes.properties.find(
-          (item) =>
-            item.id.toLowerCase() === lookupValue.toLowerCase() ||
-            (item.slug && item.slug.toLowerCase() === lookupValue.toLowerCase()) ||
-            (item.name && item.name.toLowerCase().includes(lookupValue.toLowerCase())),
-        ) || listRes.properties[0] || null;
+      // 2. Direct lookup with raw input if different
+      if (!property && rawInput !== lookupValue) {
+        const rawRes = await api.properties.lookup(rawInput).catch(() => null);
+        if (rawRes?.property) {
+          property = rawRes.property;
+        }
+      }
+
+      // 3. Fallback: Search endpoint with lookupValue
+      if (!property) {
+        const listRes = await api.properties.list({ search: lookupValue }).catch(() => ({ properties: [] }));
+        if (listRes.properties && listRes.properties.length > 0) {
+          const lowerVal = lookupValue.toLowerCase();
+          property =
+            listRes.properties.find(
+              (item) =>
+                item.id.toLowerCase() === lowerVal ||
+                (item.ref && item.ref.toLowerCase() === lowerVal) ||
+                (item.slug && item.slug.toLowerCase() === lowerVal) ||
+                (item.annonce_url && item.annonce_url.toLowerCase().includes(lowerVal)) ||
+                (item.name && item.name.toLowerCase().includes(lowerVal))
+            ) || listRes.properties[0];
+        }
+      }
+
+      // 4. Fallback: Extract code e.g. 11270b or 11270
+      if (!property) {
+        const codeMatch = lookupValue.match(/([0-9]{3,6}[a-z]?)/i);
+        if (codeMatch) {
+          const code = codeMatch[1];
+          const directCodeRes = await api.properties.get(encodeURIComponent(code)).catch(() => null);
+          if (directCodeRes?.property) {
+            property = directCodeRes.property;
+          } else {
+            const listRes = await api.properties.list({ search: code }).catch(() => ({ properties: [] }));
+            if (listRes.properties && listRes.properties.length > 0) {
+              property = listRes.properties[0];
+            }
+          }
+        }
+      }
 
       if (property) {
         handleSelectKretzProperty(property);
         setSavedSuccess(`Property ${property.id} (${property.name}) loaded successfully from the Kretz portfolio.`);
       } else {
-        setError('Property not found in the Kretz portfolio. Please check the reference, slug, or URL and try again.');
+        setError(`Property "${rawInput}" could not be found in the Kretz portfolio. Please verify the reference or URL.`);
       }
     } catch (err: any) {
       setError('Failed to fetch property: ' + (err.message || 'unknown error'));
@@ -264,6 +295,12 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
             type="text"
             value={propertyNumberInput}
             onChange={(e) => setPropertyNumberInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handlePropertyNumberLookup();
+              }
+            }}
             placeholder="Enter property number, slug, or kretz.site URL..."
             className="w-full flex-1 px-3.5 py-2.5 rounded-lg bg-white border border-neutral-300 text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-black font-mono"
           />

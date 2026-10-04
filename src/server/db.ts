@@ -605,8 +605,12 @@ export function getProperties(filter?: {
       return false;
     }
     if (filter.search) {
-      const q = filter.search.toLowerCase();
+      const q = filter.search.toLowerCase().trim();
       const match =
+        prop.id.toLowerCase().includes(q) ||
+        (prop.ref && prop.ref.toLowerCase().includes(q)) ||
+        (prop.slug && prop.slug.toLowerCase().includes(q)) ||
+        (prop.annonce_url && prop.annonce_url.toLowerCase().includes(q)) ||
         prop.name.toLowerCase().includes(q) ||
         prop.city.toLowerCase().includes(q) ||
         prop.headline.toLowerCase().includes(q) ||
@@ -619,10 +623,81 @@ export function getProperties(filter?: {
   });
 }
 
-export function getPropertyById(id: string): KretzProperty | undefined {
+export function getPropertyById(rawId: string): KretzProperty | undefined {
+  if (!rawId) return undefined;
   const db = loadDB();
   const list = db.kretz_properties || KRETZ_PROPERTIES_DATABASE;
-  return list.find((p) => p.id === id || p.slug === id);
+
+  let id = decodeURIComponent(rawId).trim();
+  const lower = id.toLowerCase();
+
+  // 1. Direct case-insensitive match on id, slug, ref, annonce_url, tour_url
+  let found = list.find(
+    (p) =>
+      p.id.toLowerCase() === lower ||
+      (p.slug && p.slug.toLowerCase() === lower) ||
+      (p.ref && p.ref.toLowerCase() === lower) ||
+      (p.annonce_url && p.annonce_url.toLowerCase() === lower) ||
+      (p.tour_url && p.tour_url.toLowerCase() === lower)
+  );
+  if (found) return found;
+
+  // 2. URL parsing: Extract slug or ID from kretz.site URL or path
+  // Handles: https://kretz.site/#/annonce/kp1-11270b/bastide
+  // Handles: https://kretz.site/kretz-tour/en/annonce/kp1-11270b/bastide/
+  // Handles: #/annonce/kp1-11270b/bastide
+  const urlMatch = lower.match(/(?:annonce|property)\/([a-z0-9_-]+)(?:\/([a-z0-9_-]+))?/i);
+  if (urlMatch) {
+    const part1 = urlMatch[1]; // kp1-11270b
+    const part2 = urlMatch[2]; // bastide
+    const combinedSlug = part2 ? `${part1}-${part2}` : part1; // kp1-11270b-bastide
+
+    found = list.find(
+      (p) =>
+        p.id.toLowerCase() === part1 ||
+        (p.ref && p.ref.toLowerCase() === part1) ||
+        (p.slug && p.slug.toLowerCase() === combinedSlug) ||
+        (p.slug && p.slug.toLowerCase() === part1) ||
+        (p.annonce_url && p.annonce_url.toLowerCase().includes(part1))
+    );
+    if (found) return found;
+  }
+
+  // 3. Normalized path with slashes converted to dash: e.g. kp1-11270b/bastide -> kp1-11270b-bastide
+  const normalizedSlug = lower
+    .replace(/^(?:https?:\/\/[^/]+)?(?:\/#)?(?:\/)?(?:annonce|property)\//i, '')
+    .replace(/\/+$/, '')
+    .replace(/\//g, '-');
+  if (normalizedSlug) {
+    found = list.find(
+      (p) =>
+        p.id.toLowerCase() === normalizedSlug ||
+        (p.slug && p.slug.toLowerCase() === normalizedSlug)
+    );
+    if (found) return found;
+  }
+
+  // 4. Extract KP code e.g. "kp1-11270b" or "11270b" or "11270"
+  const kpCodeMatch = lower.match(/(?:kp\d*[-_]?)?([0-9]{3,6}[a-z]?)/i);
+  if (kpCodeMatch && kpCodeMatch[1]) {
+    const code = kpCodeMatch[1]; // e.g. 11270b
+    found = list.find(
+      (p) =>
+        p.id.toLowerCase().includes(code) ||
+        (p.slug && p.slug.toLowerCase().includes(code))
+    );
+    if (found) return found;
+  }
+
+  // 5. Partial contains in ID, slug, or ref
+  found = list.find(
+    (p) =>
+      p.id.toLowerCase().includes(lower) ||
+      (p.slug && p.slug.toLowerCase().includes(lower)) ||
+      (p.ref && p.ref.toLowerCase().includes(lower))
+  );
+
+  return found;
 }
 
 export function generateNextRequestId(): string {

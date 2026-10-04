@@ -630,6 +630,26 @@
   ],
   "audit_logs": [
     {
+      "id": "aud_1791096973241_rvytu",
+      "timestamp": "2026-10-04T06:56:13.241Z",
+      "user_email": "melissamenorsophia@gmail.com",
+      "action": "LOGIN_FAILED",
+      "resource_type": "AUTH",
+      "details": "Invalid credentials provided.",
+      "ip_address": "102.91.4.41",
+      "result": "FAILURE"
+    },
+    {
+      "id": "aud_1791096971061_8c4id",
+      "timestamp": "2026-10-04T06:56:11.061Z",
+      "user_email": "melissamenorsophia@gmail.com",
+      "action": "LOGIN_FAILED",
+      "resource_type": "AUTH",
+      "details": "Invalid credentials provided.",
+      "ip_address": "102.91.4.41",
+      "result": "FAILURE"
+    },
+    {
       "id": "aud_1791075721716_5k9bm",
       "timestamp": "2026-10-04T01:02:01.716Z",
       "user_id": "usr_admin_001",

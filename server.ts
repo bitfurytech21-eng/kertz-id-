@@ -535,6 +535,20 @@ app.get('/api/properties', (req: Request, res: Response) => {
   return res.json({ properties, total: properties.length });
 });
 
+// Dedicated Property Lookup by URL, Reference, Slug, or ID
+app.get('/api/properties/lookup', (req: Request, res: Response) => {
+  const rawQuery = req.query.query ? String(req.query.query) : req.query.q ? String(req.query.q) : req.query.search ? String(req.query.search) : '';
+  if (!rawQuery.trim()) {
+    return res.status(400).json({ error: 'Lookup query parameter is required.' });
+  }
+
+  const property = getPropertyById(rawQuery);
+  if (!property) {
+    return res.status(404).json({ error: 'Property record not found in Kretz portfolio.' });
+  }
+  return res.json({ property });
+});
+
 // Get Single Property by ID or Slug
 app.get('/api/properties/:id', (req: Request, res: Response) => {
   const { id } = req.params;
