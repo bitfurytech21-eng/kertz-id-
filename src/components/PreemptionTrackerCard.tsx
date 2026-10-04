@@ -1,4 +1,5 @@
 import React from 'react';
+import { jsPDF } from 'jspdf';
 import {
   Clock,
   ShieldCheck,
@@ -67,7 +68,28 @@ export const PreemptionTrackerCard: React.FC<PreemptionTrackerCardProps> = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => alert('Certificate of Non-Preemption downloaded.')}
+            onClick={() => {
+              try {
+                const doc = new jsPDF();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                doc.setFillColor(15, 23, 42);
+                doc.rect(0, 0, pageWidth, 26, 'F');
+                doc.setFont('times', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(255, 255, 255);
+                doc.text('CERTIFICATE OF NON-PREEMPTION & STATUTORY WAIVER', 14, 12);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(251, 191, 36);
+                doc.text('CODE DE L\'URBANISME ART. L210-1 & R213-1 ET SUIV.', 14, 18);
+                doc.setFontSize(10);
+                doc.setTextColor(30, 41, 59);
+                doc.text(`Property: ${propertyName}`, 14, 38);
+                doc.text(`Date of Issue: ${new Date().toLocaleDateString()}`, 14, 46);
+                doc.text('Status: Official Non-Preemption Certified (DPU & SAFER rights purged).', 14, 54);
+                doc.save(`Non-Preemption-Certificate-${propertyName.replace(/\s+/g, '_')}.pdf`);
+              } catch {}
+            }}
             className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1.5 transition"
           >
             <FileDown className="w-3.5 h-3.5 text-amber-400" /> Download Non-Preemption Certificate

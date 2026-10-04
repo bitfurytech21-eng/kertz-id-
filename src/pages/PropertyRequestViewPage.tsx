@@ -48,7 +48,7 @@ export const PropertyRequestViewPage: React.FC<PropertyRequestViewPageProps> = (
       setMatchedProperty(prop);
       loadData();
     } catch (err: any) {
-      alert('Failed to match property: ' + err.message);
+      setError('Failed to match property: ' + (err.message || 'Unknown error'));
     }
   };
 

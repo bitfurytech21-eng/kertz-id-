@@ -97,6 +97,12 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ type, text });
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   // Modal states
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -225,8 +231,9 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
       setMessageInput('');
       setIsInternalNote(false);
       await fetchAllData();
+      showToast('Message sent securely.');
     } catch (err: any) {
-      alert('Error sending message: ' + err.message);
+      showToast('Error sending message: ' + (err.message || 'Unknown error'), 'error');
     } finally {
       setIsSubmittingMessage(false);
     }
@@ -244,21 +251,26 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
         notes: offerNotes,
       });
       await fetchAllData();
-      alert('Offer submitted to legal transaction team.');
+      showToast('Offer submitted to legal transaction team.');
     } catch (err: any) {
-      alert('Error submitting offer: ' + err.message);
+      showToast('Error submitting offer: ' + (err.message || 'Unknown error'), 'error');
     } finally {
       setIsSubmittingOffer(false);
     }
   };
 
   const handleSignContract = async (signatureDataUrl: string, signerName: string, signerRole: string) => {
-    await api.contracts.sign(transactionId, {
-      signature_data_url: signatureDataUrl,
-      signer_name: signerName,
-      signer_role: signerRole,
-    });
-    await fetchAllData();
+    try {
+      await api.contracts.sign(transactionId, {
+        signature_data_url: signatureDataUrl,
+        signer_name: signerName,
+        signer_role: signerRole,
+      });
+      await fetchAllData();
+      showToast('Contract electronic signature recorded.');
+    } catch (err: any) {
+      showToast('Failed to record signature: ' + (err.message || 'Unknown error'), 'error');
+    }
   };
 
   const handleUpdateCheck = async (e: React.FormEvent) => {
@@ -274,8 +286,9 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
       });
       setSelectedCheck(null);
       await fetchAllData();
+      showToast('Legal review check updated.');
     } catch (err: any) {
-      alert('Error updating legal check: ' + err.message);
+      showToast('Error updating legal check: ' + (err.message || 'Unknown error'), 'error');
     } finally {
       setIsUpdatingCheck(false);
     }
@@ -292,13 +305,13 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
     try {
       await api.closing.updateChecklist(itemId, { status: nextStatus });
       await fetchAllData();
+      showToast('Closing checklist updated.');
     } catch (err: any) {
-      alert('Error updating checklist item: ' + err.message);
+      showToast('Error updating checklist item: ' + (err.message || 'Unknown error'), 'error');
     }
   };
 
   const handleFinalizeClosing = async () => {
-    if (!confirm('Are you sure you want to finalize closing and execute property title transfer?')) return;
     try {
       await api.closing.finalize(transactionId, {
         registration_number: `REG-75-${Math.floor(100000 + Math.random() * 900000)}`,
@@ -306,9 +319,9 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
         key_handover_confirmed: true,
       });
       await fetchAllData();
-      alert('Transaction officially completed and title transferred.');
+      showToast('Transaction officially completed and title transferred.');
     } catch (err: any) {
-      alert('Error completing closing: ' + err.message);
+      showToast('Error completing closing: ' + (err.message || 'Unknown error'), 'error');
     }
   };
 
@@ -323,8 +336,9 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
         contract,
         signatures,
       });
+      showToast('Transaction audit report PDF generated.');
     } catch (err: any) {
-      alert('Failed to generate PDF summary report: ' + err.message);
+      showToast('Failed to generate PDF summary report: ' + (err.message || 'Unknown error'), 'error');
     }
   };
 
@@ -364,6 +378,27 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {toastMessage && (
+        <div
+          className={`p-3.5 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs transition-all ${
+            toastMessage.type === 'success'
+              ? 'bg-emerald-50 border border-emerald-200 text-emerald-900'
+              : 'bg-rose-50 border border-rose-200 text-rose-900'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className={`w-4 h-4 ${toastMessage.type === 'success' ? 'text-emerald-600' : 'text-rose-600'}`} />
+            <span>{toastMessage.text}</span>
+          </div>
+          <button
+            onClick={() => setToastMessage(null)}
+            className="text-slate-400 hover:text-slate-700 text-xs font-mono"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Top Breadcrumb & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs">

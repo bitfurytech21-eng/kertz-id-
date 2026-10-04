@@ -21,7 +21,6 @@ import {
 import { AdminComplianceDashboard } from './pages/admin/AdminComplianceDashboard';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { ErrorDisplay } from './components/ErrorDisplay';
 
 function Router() {
   const { user, isLoading, isStaff } = useAuth();
@@ -177,7 +176,6 @@ function Router() {
       <Navbar currentPath={currentPath} navigate={navigate} />
       <main className="flex-1">{renderContent()}</main>
       <OfflineIndicator />
-      <ErrorDisplay />
 
       <footer className="bg-slate-950 border-t border-slate-900 text-slate-400 text-xs py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">

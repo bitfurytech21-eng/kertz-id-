@@ -67,11 +67,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
             {user ? (
               <button
                 onClick={() => navigate(user.role === 'CLIENT' ? '/dashboard' : '/admin/dashboard')}
-                className="px-6 py-3 bg-white text-slate-950 font-semibold text-sm rounded-lg hover:bg-slate-100 shadow-xl shadow-white/5 active:scale-[0.99] transition-all flex items-center gap-2 border border-white"
+                className="px-6 py-3.5 bg-white text-slate-950 font-semibold text-sm rounded-xl hover:bg-slate-100 shadow-xl shadow-white/5 active:scale-[0.99] transition-all flex items-center gap-2 border border-white"
               >
                 Go to Workspace Dashboard <ArrowRight className="w-4 h-4 text-slate-950" />
               </button>
-            ) : null}
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="px-6 py-3.5 bg-white text-slate-950 font-semibold text-sm rounded-xl hover:bg-slate-100 shadow-xl shadow-white/10 active:scale-[0.99] transition-all flex items-center gap-2 border border-white"
+                >
+                  Register Client Profile <ArrowRight className="w-4 h-4 text-slate-950" />
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-6 py-3.5 bg-slate-900/90 text-white font-semibold text-sm rounded-xl hover:bg-slate-800 border border-slate-700 shadow-lg active:scale-[0.99] transition-all flex items-center gap-2"
+                >
+                  <Lock className="w-4 h-4 text-amber-400" />
+                  Sign In to Private Workspace
+                </button>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -176,6 +192,41 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
           </div>
         </div>
       </section>
+
+      {/* Bottom CTA Card */}
+      {!user && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-slate-800 text-center space-y-6 shadow-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono">
+              <Shield className="w-3.5 h-3.5" /> SECURE LEGAL ACCESS
+            </div>
+
+            <div className="space-y-2 max-w-2xl mx-auto">
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+                Begin Your Confidential Acquisition File
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Register your buyer profile to submit property acquisition requirements, access verified legal due diligence audits, and coordinate directly with notarial counsel.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => navigate('/register')}
+                className="px-6 py-3 bg-white text-slate-950 font-bold text-xs sm:text-sm rounded-xl hover:bg-slate-100 shadow-xl transition-all"
+              >
+                Create Client Account &rarr;
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs sm:text-sm rounded-xl border border-slate-700 transition-all"
+              >
+                Sign In to Existing Vault
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

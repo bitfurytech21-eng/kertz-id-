@@ -185,7 +185,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 </button>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => navigate('/login')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  currentPath === '/login'
+                    ? 'bg-neutral-800 text-white'
+                    : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                }`}
+              >
+                Sign In
+              </button>
+
+              <button
+                onClick={() => navigate('/register')}
+                className="px-3.5 py-1.5 bg-white text-black font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-xs"
+              >
+                Register
+              </button>
+
+              <button
+                onClick={() => navigate('/admin/login')}
+                className="hidden sm:inline-flex px-2.5 py-1 text-[10px] font-mono text-neutral-400 hover:text-neutral-200 rounded border border-neutral-800 hover:border-neutral-700 transition-colors"
+                title="Legal & Notarial Staff Portal"
+              >
+                Staff Portal
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

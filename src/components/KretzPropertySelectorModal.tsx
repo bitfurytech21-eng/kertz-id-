@@ -37,15 +37,17 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
   const [typeFilter, setTypeFilter] = useState('All');
   const [countryFilter, setCountryFilter] = useState('All');
   const [previewProperty, setPreviewProperty] = useState<KretzProperty | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleSyncKretz = async () => {
     setSyncing(true);
+    setStatusMsg(null);
     try {
       const res = await api.properties.syncFromKretz();
       setProperties(res.properties || []);
-      alert(res.message);
+      setStatusMsg({ type: 'success', text: res.message || 'Properties synchronized successfully.' });
     } catch (err: any) {
-      alert('Sync failed: ' + err.message);
+      setStatusMsg({ type: 'error', text: 'Sync failed: ' + (err.message || 'Unknown error') });
     } finally {
       setSyncing(false);
     }
@@ -116,6 +118,24 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {statusMsg && (
+          <div
+            className={`px-4 py-2.5 text-xs flex items-center justify-between font-mono ${
+              statusMsg.type === 'success'
+                ? 'bg-emerald-950/80 border-b border-emerald-800/60 text-emerald-300'
+                : 'bg-rose-950/80 border-b border-rose-800/60 text-rose-300'
+            }`}
+          >
+            <span>{statusMsg.text}</span>
+            <button
+              onClick={() => setStatusMsg(null)}
+              className="text-slate-400 hover:text-white font-sans text-xs underline ml-2"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Filter Toolbar */}
         <div className="p-4 border-b border-slate-800 bg-slate-950/60 flex flex-wrap items-center justify-between gap-3">

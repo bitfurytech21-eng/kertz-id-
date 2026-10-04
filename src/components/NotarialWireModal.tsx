@@ -1,4 +1,5 @@
 import React from 'react';
+import { jsPDF } from 'jspdf';
 import {
   X,
   ShieldCheck,
@@ -53,7 +54,52 @@ export const NotarialWireModal: React.FC<NotarialWireModalProps> = ({
   };
 
   const handleDownloadWirePdf = () => {
-    alert('Tamper-proof Notarial Wire Instruction Sheet (PDF) generated and verified against Chambre des Notaires registry.');
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      // Header Bar
+      doc.setFillColor(15, 23, 42);
+      doc.rect(0, 0, pageWidth, 26, 'F');
+
+      doc.setFont('times', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(255, 255, 255);
+      doc.text('KRETZ PRIVATE NOTARIAL ESCROW INSTRUCTIONS', 14, 12);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(251, 191, 36);
+      doc.text('OFFICIAL CDC FIDUCIARY TRUST ACCOUNT • CONFIDENTIAL', 14, 18);
+
+      // Details
+      doc.setFontSize(10);
+      doc.setTextColor(30, 41, 59);
+      doc.text(`Transaction Reference: ${transaction.id}`, 14, 38);
+      doc.text(`Property: ${transaction.property_name}`, 14, 46);
+      doc.text(`Client Beneficiary: ${transaction.client_name || 'Designated Buyer'}`, 14, 54);
+      doc.text(`Agreed Value: € ${transaction.agreed_price.toLocaleString()}`, 14, 62);
+
+      doc.setDrawColor(226, 232, 240);
+      doc.line(14, 70, pageWidth - 14, 70);
+
+      doc.setFont('times', 'bold');
+      doc.setFontSize(12);
+      doc.text('Fiduciary Bank & Wire Routing Details', 14, 80);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Fiduciary Bank: ${wireInfo.bank_name}`, 14, 90);
+      doc.text(`Account Holder: ${wireInfo.beneficiary_account_name}`, 14, 98);
+      doc.text(`IBAN: ${wireInfo.iban_formatted}`, 14, 106);
+      doc.text(`BIC / SWIFT: ${wireInfo.bic_swift}`, 14, 114);
+      doc.text(`Payment Reference / Motif: ${wireInfo.payment_reference_code}`, 14, 122);
+      doc.text(`Security Hash: ${wireInfo.security_verification_hash}`, 14, 130);
+
+      doc.save(`Notarial-Wire-Instructions-${transaction.id}.pdf`);
+    } catch {
+      // Fallback
+    }
   };
 
   return (

@@ -1,3 +1,28 @@
+import type {
+  User,
+  UserProfile,
+  KretzProperty,
+  PropertyRequest,
+  Transaction,
+  DocumentItem,
+  DocumentVersion,
+  LegalReview,
+  LegalCheck,
+  Offer,
+  Contract,
+  ContractSignature,
+  TracfinDossier,
+  QESContractSession,
+  Payment,
+  ClosingRecord,
+  ClosingChecklistItem,
+  Message,
+  Notification,
+  AuditLog,
+  PlatformMetrics,
+  UserRole,
+} from '../types';
+
 let cachedToken: string | null = null;
 
 try {

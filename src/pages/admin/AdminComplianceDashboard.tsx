@@ -143,7 +143,8 @@ export const AdminComplianceDashboard: React.FC<{ navigate: (path: string) => vo
   };
 
   const handleFileTracfinDeclaration = (txId: string) => {
-    alert(`Formal Tracfin Suspicious Activity Report (SAR) generated for Transaction #${txId} and encrypted for ANSSI / French Ministry of Economy filing submission.`);
+    setSuccessMsg(`Formal Tracfin Suspicious Activity Report (SAR) generated for Transaction #${txId} and encrypted for ANSSI / French Ministry of Economy filing submission.`);
+    setTimeout(() => setSuccessMsg(null), 4000);
   };
 
   // Filtered Rows

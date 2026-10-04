@@ -180,12 +180,14 @@ export const AdminDashboard: React.FC<{ navigate: (path: string) => void }> = ({
 export const AdminClients: React.FC<{ navigate: (path: string) => void; selectedClientId?: string }> = () => {
   const [clients, setClients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchClients = () => {
     setLoading(true);
+    setError(null);
     api.admin.getClients()
       .then((res) => setClients(res.clients || []))
-      .catch((err) => console.error(err))
+      .catch((err) => setError(err.message || 'Failed to load clients'))
       .finally(() => setLoading(false));
   };
 
@@ -198,7 +200,7 @@ export const AdminClients: React.FC<{ navigate: (path: string) => void; selected
       await api.admin.updateKyc(clientId, kycStatus);
       fetchClients();
     } catch (err: any) {
-      alert('Error updating KYC: ' + err.message);
+      setError('Error updating KYC: ' + (err.message || 'Unknown error'));
     }
   };
 
@@ -285,6 +287,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
   const [propAddress, setPropAddress] = useState('');
   const [agreedPrice, setAgreedPrice] = useState('');
   const [isSubmittingConvert, setIsSubmittingConvert] = useState(false);
+  const [convertError, setConvertError] = useState<string | null>(null);
 
   const fetchRequests = () => {
     setLoading(true);
@@ -300,6 +303,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
 
   const handleOpenConvert = (req: PropertyRequest) => {
     setConvertModalRequest(req);
+    setConvertError(null);
     setPropName(`${req.property_type} - ${req.preferred_city}`);
     setPropAddress(`${req.preferred_neighborhood || ''} ${req.preferred_city}, ${req.preferred_country}`);
     setAgreedPrice(String(req.budget));
@@ -309,6 +313,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
     e.preventDefault();
     if (!convertModalRequest) return;
     setIsSubmittingConvert(true);
+    setConvertError(null);
     try {
       const res = await api.propertyRequests.convertToTransaction(convertModalRequest.id, {
         property_name: propName,
@@ -318,7 +323,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
       setConvertModalRequest(null);
       navigate(`/transactions/${res.transaction.id}`);
     } catch (err: any) {
-      alert('Error creating transaction: ' + err.message);
+      setConvertError(err.message || 'Error creating transaction');
     } finally {
       setIsSubmittingConvert(false);
     }
@@ -502,6 +507,7 @@ export const AdminDocuments: React.FC<{ navigate: (path: string) => void }> = ()
   const [reviewStatus, setReviewStatus] = useState('APPROVED');
   const [reviewComment, setReviewComment] = useState('');
   const [isReviewing, setIsReviewing] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
 
   const fetchDocs = async () => {
     // For admin, we fetch transactions and their documents
@@ -520,6 +526,7 @@ export const AdminDocuments: React.FC<{ navigate: (path: string) => void }> = ()
     e.preventDefault();
     if (!selectedDoc) return;
     setIsReviewing(true);
+    setReviewError(null);
     try {
       await api.documents.review(selectedDoc.id, {
         status: reviewStatus,
@@ -528,7 +535,7 @@ export const AdminDocuments: React.FC<{ navigate: (path: string) => void }> = ()
       setSelectedDoc(null);
       await fetchDocs();
     } catch (err: any) {
-      alert('Error reviewing document: ' + err.message);
+      setReviewError(err.message || 'Error reviewing document');
     } finally {
       setIsReviewing(false);
     }

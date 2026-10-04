@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { jsPDF } from 'jspdf';
 import {
   ShieldCheck,
   FileText,
@@ -834,7 +835,30 @@ export const QESProviderIntegrationModule: React.FC<QESProviderIntegrationModule
             <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
               <button
                 type="button"
-                onClick={() => alert('Certificate of Completion (PDF) downloaded.')}
+                onClick={() => {
+                  try {
+                    const doc = new jsPDF();
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    doc.setFillColor(15, 23, 42);
+                    doc.rect(0, 0, pageWidth, 26, 'F');
+                    doc.setFont('times', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('QUALIFIED ELECTRONIC SIGNATURE (QES) AUDIT CERTIFICATE', 14, 12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(8);
+                    doc.setTextColor(251, 191, 36);
+                    doc.text('EU REGULATION NO 910/2014 (eIDAS) & ANSSI QUALIFIED TSP', 14, 18);
+                    doc.setFontSize(10);
+                    doc.setTextColor(30, 41, 59);
+                    doc.text(`Contract: ${contract.title}`, 14, 38);
+                    doc.text(`Transaction ID: ${transaction.id}`, 14, 46);
+                    doc.text(`Property: ${transaction.property_name}`, 14, 54);
+                    doc.text(`Date of Issue: ${new Date().toUTCString()}`, 14, 62);
+                    doc.text(`Status: Completed & Cryptographically Sealed`, 14, 70);
+                    doc.save(`QES-Audit-Certificate-${transaction.id}.pdf`);
+                  } catch {}
+                }}
                 className="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center gap-1.5"
               >
                 <Download className="w-3.5 h-3.5 text-amber-400" /> Download Audit Proof PDF

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { X, ShieldCheck, PenTool, Type, RotateCcw, Lock, CheckCircle2 } from 'lucide-react';
+import { X, ShieldCheck, PenTool, Type, RotateCcw, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface SignaturePadModalProps {
   isOpen: boolean;
@@ -25,6 +25,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
   const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasDrawn, setHasDrawn] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
@@ -32,7 +33,8 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
   useEffect(() => {
     setSignerName(defaultSignerName);
     setTypedSignature(defaultSignerName);
-  }, [defaultSignerName]);
+    setError(null);
+  }, [defaultSignerName, isOpen]);
 
   useEffect(() => {
     if (isOpen && mode === 'DRAW' && canvasRef.current) {
@@ -117,13 +119,14 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (!agreed) return;
     if (mode === 'DRAW' && !hasDrawn) {
-      alert('Please draw your signature in the signature area.');
+      setError('Please draw your signature in the signature area.');
       return;
     }
     if (mode === 'TYPE' && !typedSignature.trim()) {
-      alert('Please type your legal signature name.');
+      setError('Please type your legal signature name.');
       return;
     }
 
@@ -133,7 +136,7 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
       await onSign(dataUrl, signerName, signerRole);
       onClose();
     } catch (err: any) {
-      alert(err.message || 'Failed to submit electronic signature');
+      setError(err.message || 'Failed to submit electronic signature');
     } finally {
       setIsSubmitting(false);
     }
@@ -160,6 +163,13 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {error && (
+          <div className="mx-6 mt-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Document Summary */}
