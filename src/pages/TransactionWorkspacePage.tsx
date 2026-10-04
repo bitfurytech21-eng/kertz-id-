@@ -55,6 +55,7 @@ import { CadastralGISViewer } from '../components/CadastralGISViewer';
 import { TechnicalDiagnosticCard } from '../components/TechnicalDiagnosticCard';
 import { PreemptionTrackerCard } from '../components/PreemptionTrackerCard';
 import { NotarialWireModal } from '../components/NotarialWireModal';
+import { EscrowPaymentInteractionModal } from '../components/EscrowPaymentInteractionModal';
 import { CurrencyConverterCard } from '../components/CurrencyConverterCard';
 import { TracfinComplianceModal } from '../components/TracfinComplianceModal';
 import { TracfinEmbeddedSection } from '../components/TracfinEmbeddedSection';
@@ -102,6 +103,8 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
   const [isTracfinOpen, setIsTracfinOpen] = useState(false);
   const [isQESOpen, setIsQESOpen] = useState(false);
   const [isWireModalOpen, setIsWireModalOpen] = useState(false);
+  const [isEscrowModalOpen, setIsEscrowModalOpen] = useState(false);
+  const [selectedEscrowPayment, setSelectedEscrowPayment] = useState<Payment | null>(null);
   const [selectedDocForVersions, setSelectedDocForVersions] = useState<DocumentItem | null>(null);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [messageInput, setMessageInput] = useState('');
@@ -277,18 +280,10 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
     }
   };
 
-  const handleConfirmPayment = async (paymentId: string) => {
-    if (!isStaff) return;
-    const ref = prompt('Enter Bank Escrow Confirmation Reference (or confirm default):', `ESCROW-WIRE-${Date.now()}`);
-    if (!ref) return;
-
-    try {
-      await api.payments.confirm(transactionId, paymentId, { transaction_reference: ref });
-      await fetchAllData();
-      alert('Escrow payment verified and confirmed.');
-    } catch (err: any) {
-      alert('Error confirming payment: ' + err.message);
-    }
+  const handleConfirmPayment = (paymentId: string) => {
+    const pay = payments.find((p) => p.id === paymentId) || null;
+    setSelectedEscrowPayment(pay);
+    setIsEscrowModalOpen(true);
   };
 
   const handleChecklistToggle = async (itemId: string, currentStatus: string) => {
@@ -1168,14 +1163,26 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
                 <p className="text-xs text-slate-500">Verified bank escrow wire schedule and official receipts</p>
               </div>
 
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsWireModalOpen(true)}
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+                  className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs rounded-lg shadow-xs transition flex items-center gap-1.5"
                 >
-                  <ShieldCheck className="w-4 h-4" />
-                  View Tamper-Proof Notarial Wire Details
+                  <ShieldCheck className="w-4 h-4 text-slate-600" />
+                  Notarial Wire Details
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedEscrowPayment(null);
+                    setIsEscrowModalOpen(true);
+                  }}
+                  className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5"
+                >
+                  <Lock className="w-4 h-4 text-amber-400" />
+                  Execute Escrow Wire Payment
                 </button>
               </div>
             </div>
@@ -1189,7 +1196,7 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
                   <th className="py-3 px-4">Due Date</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Confirmation & Reference</th>
-                  {isStaff && <th className="py-3 px-4 text-right">Officer Action</th>}
+                  <th className="py-3 px-4 text-right">Escrow Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -1225,18 +1232,22 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
                         <span className="text-slate-400 text-[11px]">Awaiting notary escrow wire</span>
                       )}
                     </td>
-                    {isStaff && (
-                      <td className="py-3.5 px-4 text-right">
-                        {p.status !== 'CONFIRMED' && (
-                          <button
-                            onClick={() => handleConfirmPayment(p.id)}
-                            className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] rounded shadow-xs transition-colors"
-                          >
-                            Verify & Confirm Wire
-                          </button>
-                        )}
-                      </td>
-                    )}
+                    <td className="py-3.5 px-4 text-right">
+                      {p.status !== 'CONFIRMED' ? (
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmPayment(p.id)}
+                          className="px-3 py-1.5 bg-slate-950 hover:bg-slate-900 text-white font-semibold text-[11px] rounded-lg shadow-xs transition-colors flex items-center gap-1.5 ml-auto"
+                        >
+                          <Lock className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Execute Wire</span>
+                        </button>
+                      ) : (
+                        <span className="text-[11px] font-mono text-emerald-700 font-bold flex items-center gap-1 justify-end">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Secured
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 )))}
               </tbody>
@@ -1582,6 +1593,24 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
           isOpen={isWireModalOpen}
           onClose={() => setIsWireModalOpen(false)}
           transaction={transaction}
+        />
+      )}
+
+      {/* Escrow Payment Interaction & Secure Status Update Modal */}
+      {transaction && (
+        <EscrowPaymentInteractionModal
+          isOpen={isEscrowModalOpen}
+          onClose={() => {
+            setIsEscrowModalOpen(false);
+            setSelectedEscrowPayment(null);
+          }}
+          transaction={transaction}
+          payments={payments}
+          initialPayment={selectedEscrowPayment}
+          onPaymentSuccess={async (updatedTx) => {
+            setTransaction(updatedTx);
+            await fetchAllData();
+          }}
         />
       )}
     </div>

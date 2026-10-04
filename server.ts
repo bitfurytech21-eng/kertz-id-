@@ -48,6 +48,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.set('trust proxy', 1);
+
+// Security headers for HTTPS and reverse proxies
+app.use((_req, res, next) => {
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
+
 const PORT = Number(process.env.PORT) || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'kretz-legal-secure-master-secret-key-2026-v1';
 const STORAGE_DIR = path.resolve(process.cwd(), 'data', 'secure_storage');
@@ -2742,6 +2751,126 @@ app.post(
   },
 );
 
+// Execute / Record Escrow Wire Payment & Advance Transaction Status
+app.post(
+  '/api/transactions/:id/escrow-deposit',
+  authenticateJWT,
+  (req: AuthenticatedRequest, res: Response) => {
+    const { id } = req.params;
+    const access = checkTransactionAccess(req, id);
+    if (access.error || !access.tx) {
+      return res.status(access.status).json({ error: access.error });
+    }
+
+    const { payment_id, amount, description, transaction_reference, payment_rail } = req.body;
+    const db = loadDB();
+    const tx = db.transactions.find((t) => t.id === id);
+    if (!tx) return res.status(404).json({ error: 'Transaction not found.' });
+
+    const now = new Date().toISOString();
+    const userProfile = db.user_profiles.find((p) => p.user_id === req.user!.id);
+    const actorName = userProfile ? `${userProfile.first_name} ${userProfile.last_name}` : req.user!.email;
+
+    let targetPayment: Payment | undefined;
+    if (payment_id) {
+      targetPayment = db.payments.find((p) => p.id === payment_id && p.transaction_id === id);
+    }
+
+    const wireRef = transaction_reference || `CDC-WIRE-ESCROW-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const depositAmount = Number(amount) || (targetPayment ? targetPayment.amount : Math.round(tx.agreed_price * 0.05));
+    const payMethod = payment_rail || 'SEPA Instant Notarial Wire (Banque des Notaires / CDC)';
+
+    if (!targetPayment) {
+      targetPayment = {
+        id: `pay_escrow_${Date.now()}`,
+        transaction_id: id,
+        client_id: tx.client_id,
+        description: description || '5% Notarial Guarantee Escrow Deposit (Caisse des Dépôts)',
+        amount: depositAmount,
+        currency: tx.currency,
+        due_date: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+        status: 'CONFIRMED',
+        payment_method: payMethod,
+        transaction_reference: wireRef,
+        confirmed_at: now,
+        confirmed_by: `${actorName} (${req.user!.role})`,
+        created_at: now,
+        updated_at: now,
+      };
+      db.payments.push(targetPayment);
+    } else {
+      targetPayment.status = 'CONFIRMED';
+      targetPayment.payment_method = payMethod;
+      targetPayment.transaction_reference = wireRef;
+      targetPayment.confirmed_at = now;
+      targetPayment.confirmed_by = `${actorName} (${req.user!.role})`;
+      targetPayment.updated_at = now;
+    }
+
+    // Automatically advance transaction status
+    const previousStatus = tx.status;
+    let newStatus = tx.status;
+    let newStep = tx.current_step;
+
+    if (tx.status === 'INITIATED' || tx.status === 'LEGAL_DUE_DILIGENCE' || tx.status === 'OFFER_STAGE' || tx.status === 'CONTRACT_SIGNING') {
+      newStatus = 'PAYMENTS_ESCROW';
+      newStep = Math.max(tx.current_step, 5);
+    } else if (tx.status === 'PAYMENTS_ESCROW') {
+      newStatus = 'CLOSING';
+      newStep = Math.max(tx.current_step, 6);
+    }
+
+    tx.status = newStatus;
+    tx.current_step = newStep;
+    tx.updated_at = now;
+
+    // Mark closing checklist item 'deposit_payment' as COMPLETED
+    const checklistItem = db.closing_checklist.find((c) => c.transaction_id === id && c.item_key === 'deposit_payment');
+    if (checklistItem) {
+      checklistItem.status = 'COMPLETED';
+      checklistItem.completed_by = actorName;
+      checklistItem.completed_at = now;
+    }
+
+    // Generate cryptographic verification proof
+    const verificationHash = hashString(`ESCROW:${id}:${targetPayment.id}:${depositAmount}:${wireRef}:${now}`);
+
+    // Audit log
+    logAudit({
+      user_id: req.user!.id,
+      user_email: req.user!.email,
+      user_role: req.user!.role,
+      action: 'ESCROW_PAYMENT_EXECUTED',
+      resource_type: 'PAYMENT',
+      resource_id: targetPayment.id,
+      transaction_id: id,
+      details: `Escrow payment executed: ${depositAmount} ${tx.currency}. Status changed from ${previousStatus} to ${newStatus}. Verification: ${verificationHash}`,
+      ip_address: getClientIP(req),
+      result: 'SUCCESS',
+    });
+
+    saveDB();
+
+    return res.json({
+      message: 'Escrow payment recorded and transaction status securely updated.',
+      payment: targetPayment,
+      transaction: tx,
+      status_update: {
+        previous_status: previousStatus,
+        new_status: newStatus,
+        current_step: newStep,
+        amount: depositAmount,
+        currency: tx.currency,
+        reference: wireRef,
+        confirmed_at: now,
+        confirmed_by: `${actorName} (${req.user!.role})`,
+        verification_hash: `SHA256:${verificationHash}`,
+        notary_jurisdiction: 'Chambre des Notaires de Paris / Caisse des Dépôts et Consignations (CDC)',
+      },
+    });
+  }
+);
+
 // ==========================================
 // 9. CLOSING & TIMELINE
 // ==========================================
@@ -3143,6 +3272,30 @@ app.get(
     return res.json({ logs: logs.slice(0, max) });
   },
 );
+
+// ==========================================
+// DIRECT ANDROID APK DOWNLOAD
+// ==========================================
+app.get(['/download/kretz-legal.apk', '/api/download-apk'], (_req, res) => {
+  const primaryApk = path.resolve(__dirname, 'public', 'kretz-legal.apk');
+  const distApk = path.resolve(__dirname, 'dist', 'kretz-legal.apk');
+  const buildApk = path.resolve(__dirname, 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk');
+
+  const targetPath = fs.existsSync(primaryApk)
+    ? primaryApk
+    : fs.existsSync(distApk)
+    ? distApk
+    : fs.existsSync(buildApk)
+    ? buildApk
+    : null;
+
+  if (targetPath) {
+    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
+    res.setHeader('Content-Disposition', 'attachment; filename="kretz-legal.apk"');
+    return res.sendFile(targetPath);
+  }
+  return res.status(404).json({ error: 'APK file not found.' });
+});
 
 // ==========================================
 // VITE SPA INTEGRATION & SERVER START

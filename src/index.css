@@ -1,34 +1,77 @@
 @import "tailwindcss";
 
-@keyframes heroZoom {
+@keyframes heroCinematicZoom {
   0% {
-    transform: scale(1) translate3d(0, 0, 0);
+    transform: scale(1.02) translate3d(0, 0, 0);
   }
-  50% {
-    transform: scale(1.08) translate3d(0, -12px, 0);
+  33% {
+    transform: scale(1.10) translate3d(-18px, -10px, 0);
+  }
+  66% {
+    transform: scale(1.06) translate3d(14px, -18px, 0);
   }
   100% {
-    transform: scale(1.04) translate3d(8px, 6px, 0);
+    transform: scale(1.12) translate3d(8px, 10px, 0);
   }
 }
 
-@keyframes ambientGlow {
+@keyframes atmosphericGlowSlow {
   0%, 100% {
     opacity: 0.35;
     transform: scale(1) translate3d(0, 0, 0);
   }
   50% {
-    opacity: 0.65;
-    transform: scale(1.15) translate3d(20px, -15px, 0);
+    opacity: 0.70;
+    transform: scale(1.22) translate3d(24px, -16px, 0);
+  }
+}
+
+@keyframes subtleLightSweep {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.08;
+  }
+  50% {
+    opacity: 0.14;
+  }
+  80% {
+    opacity: 0.08;
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.85;
   }
 }
 
 .animate-hero-bg {
-  animation: heroZoom 24s ease-in-out infinite alternate;
+  animation: heroCinematicZoom 32s ease-in-out infinite alternate;
   will-change: transform;
 }
 
 .animate-ambient-glow {
-  animation: ambientGlow 12s ease-in-out infinite;
+  animation: atmosphericGlowSlow 14s ease-in-out infinite;
   will-change: transform, opacity;
 }
+
+.animate-light-sweep {
+  animation: subtleLightSweep 16s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+  will-change: opacity;
+}
+

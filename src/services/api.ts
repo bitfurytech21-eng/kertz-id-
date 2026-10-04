@@ -38,6 +38,24 @@ export function getAuthToken(): string | null {
   return cachedToken;
 }
 
+function resolveApiUrl(endpoint: string): string {
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    return endpoint;
+  }
+  // If running inside Capacitor Android app or mobile standalone shell
+  const isCapacitor =
+    typeof window !== 'undefined' &&
+    (window.location.protocol === 'capacitor:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === 'site.kretz.legal');
+
+  if (isCapacitor) {
+    const base = import.meta.env.VITE_API_URL || 'https://idverify.kretz.site';
+    return `${base.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
+  }
+  return endpoint;
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
   headers.set('X-Requested-With', 'XMLHttpRequest');
@@ -50,7 +68,8 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set('Content-Type', 'application/json');
   }
 
-  const res = await fetch(endpoint, {
+  const url = resolveApiUrl(endpoint);
+  const res = await fetch(url, {
     ...options,
     headers,
   });
@@ -480,6 +499,38 @@ export const api = {
           body: JSON.stringify(payload),
         },
       );
+    },
+
+    escrowDeposit: async (
+      transactionId: string,
+      payload: {
+        payment_id?: string;
+        amount?: number;
+        description?: string;
+        transaction_reference?: string;
+        payment_rail?: string;
+      },
+    ) => {
+      return request<{
+        message: string;
+        payment: Payment;
+        transaction: Transaction;
+        status_update: {
+          previous_status: string;
+          new_status: string;
+          current_step: number;
+          amount: number;
+          currency: string;
+          reference: string;
+          confirmed_at: string;
+          confirmed_by: string;
+          verification_hash: string;
+          notary_jurisdiction: string;
+        };
+      }>(`/api/transactions/${encodeURIComponent(transactionId)}/escrow-deposit`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
     },
   },
 

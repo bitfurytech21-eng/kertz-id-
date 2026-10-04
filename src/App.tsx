@@ -19,6 +19,7 @@ import {
   AdminAuditLogs,
 } from './pages/admin/AdminPages';
 import { AdminComplianceDashboard } from './pages/admin/AdminComplianceDashboard';
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { ErrorDisplay } from './components/ErrorDisplay';
 
@@ -51,14 +52,14 @@ function Router() {
 
   if (isLoading && !forceReady) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-amber-400 font-mono text-xs space-y-4">
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-200 font-mono text-xs space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          <span>INITIALIZING ENCRYPTED LEGAL VAULT...</span>
+          <div className="w-2 h-2 rounded-full bg-white animate-ping" />
+          <span className="tracking-wider">INITIALIZING ENCRYPTED LEGAL VAULT...</span>
         </div>
         <button
           onClick={() => setForceReady(true)}
-          className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition"
+          className="px-3 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-[11px] transition"
         >
           Proceed to Sign In &rarr;
         </button>
@@ -126,10 +127,18 @@ function Router() {
       return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
     }
 
-    // Admin & Staff Routes
+    // Admin & Staff Routes (/admin, /admin/login, /admin/dashboard, etc.)
     if (path.startsWith('/admin')) {
-      if (!user) return <LoginPage navigate={navigate} />;
-      if (!isStaff) return <ErrorDisplay type="PERMISSION" onNavigateHome={() => navigate('/dashboard')} />;
+      if (path === '/admin/login') {
+        if (user && isStaff) {
+          return <AdminDashboard navigate={navigate} />;
+        }
+        return <AdminLoginPage navigate={navigate} />;
+      }
+
+      if (!user || !isStaff) {
+        return <AdminLoginPage navigate={navigate} />;
+      }
 
       if (path === '/admin' || path === '/admin/dashboard') {
         return <AdminDashboard navigate={navigate} />;
@@ -158,10 +167,7 @@ function Router() {
       if (path === '/admin/documents') {
         return <AdminDocuments navigate={navigate} />;
       }
-      if (path === '/admin/compliance' || path === '/admin/legal-review') {
-        return <AdminComplianceDashboard navigate={navigate} />;
-      }
-      if (path === '/admin/offers') {
+      if (path === '/admin/compliance' || path === '/admin/legal-review' || path === '/admin/offers') {
         return <AdminComplianceDashboard navigate={navigate} />;
       }
       if (path === '/admin/audit-logs') {
@@ -175,7 +181,7 @@ function Router() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-amber-200 selection:text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-slate-800 selection:text-white">
       <Navbar currentPath={currentPath} navigate={navigate} />
       <main className="flex-1">{renderContent()}</main>
       <OfflineIndicator />

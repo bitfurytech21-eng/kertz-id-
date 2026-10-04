@@ -137,6 +137,45 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ navigate }) => {
               {isSubmitting ? 'Verifying Credentials...' : 'Authenticate to Staff Portal'}
             </button>
           </form>
+
+          {/* Quick Staff & Admin Access */}
+          <div className="pt-4 border-t border-slate-200 space-y-3">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+              Quick Officer Access (Authorized Roles)
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleStaffDemo('ADMIN')}
+                disabled={isSubmitting}
+                className="p-2.5 border border-slate-300 hover:border-slate-900 rounded-md text-left transition bg-slate-50 hover:bg-white text-xs font-semibold text-slate-900 flex items-center justify-between"
+              >
+                <span>Super Admin</span>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleStaffDemo('LEGAL_OFFICER')}
+                disabled={isSubmitting}
+                className="p-2.5 border border-slate-300 hover:border-slate-900 rounded-md text-left transition bg-slate-50 hover:bg-white text-xs font-semibold text-slate-900 flex items-center justify-between"
+              >
+                <span>Legal Officer</span>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleStaffDemo('TRANSACTION_OFFICER')}
+                disabled={isSubmitting}
+                className="p-2.5 border border-slate-300 hover:border-slate-900 rounded-md text-left transition bg-slate-50 hover:bg-white text-xs font-semibold text-slate-900 flex items-center justify-between"
+              >
+                <span>Trans. Officer</span>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-500 font-mono">
+              Official: <span className="text-slate-800 font-bold">admin@kretz.site</span> • Pass: <span className="text-slate-800 font-bold">Password123!</span>
+            </p>
+          </div>
         </div>
 
         {/* Back Link */}
