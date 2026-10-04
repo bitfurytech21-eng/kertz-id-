@@ -20,6 +20,15 @@ import {
 } from './pages/admin/AdminPages';
 import { AdminComplianceDashboard } from './pages/admin/AdminComplianceDashboard';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
+import { AdminFormPrinter } from './pages/admin/AdminFormPrinter';
+import { AdminTemplates } from './pages/admin/AdminTemplates';
+import { AdminLegalReview } from './pages/admin/AdminLegalReview';
+import { AdminSignatures } from './pages/admin/AdminSignatures';
+import { AdminTitleSearch } from './pages/admin/AdminTitleSearch';
+import { AdminRegistration } from './pages/admin/AdminRegistration';
+import { AdminReports } from './pages/admin/AdminReports';
+import { AdminSettings } from './pages/admin/AdminSettings';
+import { AdminLayout } from './components/AdminLayout';
 import { OfflineIndicator } from './components/OfflineIndicator';
 
 function Router() {
@@ -69,10 +78,11 @@ function Router() {
     );
   }
 
-  // Normalize path by stripping query params, hash, and trailing slashes
-  const rawPath = currentPath.split('#')[0];
-  const [pathOnly] = rawPath.split('?');
-  const normalizedPath = (pathOnly === '/' ? '/' : pathOnly.replace(/\/+$/, '')) || '/';
+  // Path Normalization
+  const [basePath] = currentPath.split('#')[0].split('?');
+  const normalizedPath = (basePath === '/' ? '/' : basePath.replace(/\/+$/, '')) || '/';
+
+  const isAdminView = isStaff && normalizedPath.startsWith('/admin') && normalizedPath !== '/admin/login';
 
   const renderContent = () => {
     if (normalizedPath === '/' || normalizedPath === '') {
@@ -145,43 +155,57 @@ function Router() {
         return <AdminLoginPage navigate={navigate} />;
       }
 
+      let adminViewElement = <AdminDashboard navigate={navigate} />;
+
       if (normalizedPath === '/admin' || normalizedPath === '/admin/dashboard') {
-        return <AdminDashboard navigate={navigate} />;
-      }
-      if (normalizedPath === '/admin/clients') {
-        return <AdminClients navigate={navigate} />;
-      }
-      if (normalizedPath.startsWith('/admin/clients/')) {
+        adminViewElement = <AdminDashboard navigate={navigate} />;
+      } else if (normalizedPath === '/admin/clients') {
+        adminViewElement = <AdminClients navigate={navigate} />;
+      } else if (normalizedPath.startsWith('/admin/clients/')) {
         const clientId = normalizedPath.replace('/admin/clients/', '');
-        return <AdminClients navigate={navigate} selectedClientId={clientId} />;
-      }
-      if (normalizedPath === '/admin/property-requests') {
-        return <AdminPropertyRequests navigate={navigate} />;
-      }
-      if (normalizedPath.startsWith('/admin/property-requests/')) {
+        adminViewElement = <AdminClients navigate={navigate} selectedClientId={clientId} />;
+      } else if (normalizedPath === '/admin/property-requests') {
+        adminViewElement = <AdminPropertyRequests navigate={navigate} />;
+      } else if (normalizedPath.startsWith('/admin/property-requests/')) {
         const reqId = normalizedPath.replace('/admin/property-requests/', '');
-        return <PropertyRequestViewPage navigate={navigate} requestId={reqId} />;
-      }
-      if (normalizedPath === '/admin/transactions') {
-        return <TransactionsListPage navigate={navigate} />;
-      }
-      if (normalizedPath.startsWith('/admin/transactions/')) {
+        adminViewElement = <PropertyRequestViewPage navigate={navigate} requestId={reqId} />;
+      } else if (normalizedPath === '/admin/transactions') {
+        adminViewElement = <TransactionsListPage navigate={navigate} />;
+      } else if (normalizedPath.startsWith('/admin/transactions/')) {
         const sub = normalizedPath.replace('/admin/transactions/', '');
         const parts = sub.split('/');
         const txId = parts[0];
         const tab = parts[1] || 'overview';
-        return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
+        adminViewElement = <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
+      } else if (normalizedPath === '/admin/documents') {
+        adminViewElement = <AdminDocuments navigate={navigate} />;
+      } else if (normalizedPath === '/admin/form-printer') {
+        adminViewElement = <AdminFormPrinter navigate={navigate} />;
+      } else if (normalizedPath === '/admin/templates') {
+        adminViewElement = <AdminTemplates navigate={navigate} />;
+      } else if (normalizedPath === '/admin/legal-review') {
+        adminViewElement = <AdminLegalReview navigate={navigate} />;
+      } else if (normalizedPath === '/admin/compliance' || normalizedPath === '/admin/offers') {
+        adminViewElement = <AdminComplianceDashboard navigate={navigate} />;
+      } else if (normalizedPath === '/admin/signatures') {
+        adminViewElement = <AdminSignatures navigate={navigate} />;
+      } else if (normalizedPath === '/admin/title-search') {
+        adminViewElement = <AdminTitleSearch navigate={navigate} />;
+      } else if (normalizedPath === '/admin/registration') {
+        adminViewElement = <AdminRegistration navigate={navigate} />;
+      } else if (normalizedPath === '/admin/reports') {
+        adminViewElement = <AdminReports navigate={navigate} />;
+      } else if (normalizedPath === '/admin/audit-logs') {
+        adminViewElement = <AdminAuditLogs />;
+      } else if (normalizedPath === '/admin/settings') {
+        adminViewElement = <AdminSettings navigate={navigate} />;
       }
-      if (normalizedPath === '/admin/documents') {
-        return <AdminDocuments navigate={navigate} />;
-      }
-      if (normalizedPath === '/admin/compliance' || normalizedPath === '/admin/legal-review' || normalizedPath === '/admin/offers') {
-        return <AdminComplianceDashboard navigate={navigate} />;
-      }
-      if (normalizedPath === '/admin/audit-logs') {
-        return <AdminAuditLogs />;
-      }
-      return <AdminDashboard navigate={navigate} />;
+
+      return (
+        <AdminLayout currentPath={normalizedPath} navigate={navigate}>
+          {adminViewElement}
+        </AdminLayout>
+      );
     }
 
     // High-fidelity 404 Route Fallback
@@ -207,6 +231,15 @@ function Router() {
       </div>
     );
   };
+
+  if (isAdminView) {
+    return (
+      <div className="min-h-screen bg-slate-100 text-slate-900 font-sans">
+        {renderContent()}
+        <OfflineIndicator />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-slate-800 selection:text-white">

@@ -16,6 +16,9 @@ import {
   ArrowRight,
   ExternalLink,
   Plus,
+  Calendar,
+  Filter,
+  X,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import {
@@ -96,16 +99,16 @@ export const AdminDashboard: React.FC<{ navigate: (path: string) => void }> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <button
           onClick={() => navigate('/admin/property-requests')}
-          className="p-5 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 hover:border-amber-400 rounded-xl shadow-xs text-left transition-all space-y-2 group"
+          className="p-5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-xs text-left transition-all space-y-2 group"
         >
-          <div className="w-9 h-9 bg-amber-400 text-slate-950 rounded-lg flex items-center justify-center">
-            <Building className="w-5 h-5" />
+          <div className="w-9 h-9 bg-slate-100 text-slate-900 rounded-lg flex items-center justify-center">
+            <Search className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-sm text-slate-900 group-hover:text-amber-900">
-            Property Portfolio Matches
+            Search Responder
           </h3>
           <p className="text-xs text-slate-500 leading-relaxed">
-            Match verified listings from kretz.site to client searches.
+            Match 207 listings from kretz.site to client searches.
           </p>
         </button>
 
@@ -396,7 +399,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
                       className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded shadow-xs text-xs inline-flex items-center gap-1 transition"
                       title="Search 207 Kretz properties and respond to client"
                     >
-                      <Building className="w-3.5 h-3.5" />
+                      <Search className="w-3.5 h-3.5" />
                       <span>{r.matched_property ? 'Update Match' : 'Respond with Property'}</span>
                     </button>
 
@@ -703,6 +706,9 @@ export const AdminDocuments: React.FC<{ navigate: (path: string) => void }> = ()
 export const AdminAuditLogs: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedEventType, setSelectedEventType] = useState('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(true);
 
   const fetchLogs = (action?: string) => {
@@ -717,34 +723,206 @@ export const AdminAuditLogs: React.FC = () => {
     fetchLogs();
   }, []);
 
-  const filteredLogs = logs.filter(
-    (l) =>
+  const setQuickDate = (days: number) => {
+    if (days === 0) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      setStartDate(todayStr);
+      setEndDate(todayStr);
+    } else {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - days);
+      setStartDate(start.toISOString().split('T')[0]);
+      setEndDate(end.toISOString().split('T')[0]);
+    }
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedEventType('ALL');
+    setStartDate('');
+    setEndDate('');
+  };
+
+  const filteredLogs = logs.filter((l) => {
+    // 1. Search Term
+    const matchesSearch =
+      !searchTerm ||
       l.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
       l.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
       l.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      l.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      l.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // 2. Event Type Filter
+    let matchesEvent = true;
+    if (selectedEventType !== 'ALL') {
+      const act = l.action.toUpperCase();
+      const det = l.details.toUpperCase();
+      if (selectedEventType === 'Document Signed') {
+        matchesEvent = act.includes('SIGN') || det.includes('SIGN') || act.includes('QES');
+      } else if (selectedEventType === 'Payment Processed') {
+        matchesEvent = act.includes('PAYMENT') || act.includes('ESCROW') || det.includes('PAYMENT') || det.includes('DEPOSIT') || det.includes('EUR');
+      } else if (selectedEventType === 'Document Uploaded / Review') {
+        matchesEvent = act.includes('DOCUMENT') || act.includes('FORM') || det.includes('DOCUMENT') || det.includes('UPLOAD');
+      } else if (selectedEventType === 'Legal & Tracfin Clearance') {
+        matchesEvent = act.includes('LEGAL') || act.includes('TRACFIN') || act.includes('AML') || det.includes('CLEARED');
+      } else if (selectedEventType === 'User Authentication') {
+        matchesEvent = act.includes('LOGIN') || act.includes('AUTH') || act.includes('USER') || det.includes('LOGIN');
+      } else {
+        matchesEvent = act === selectedEventType.toUpperCase();
+      }
+    }
+
+    // 3. Date Range Filter
+    let matchesDate = true;
+    if (startDate) {
+      const logDate = new Date(l.timestamp).getTime();
+      const startMs = new Date(startDate).getTime();
+      if (logDate < startMs) matchesDate = false;
+    }
+    if (endDate) {
+      const logDate = new Date(l.timestamp).getTime();
+      const endMs = new Date(`${endDate}T23:59:59.999`).getTime();
+      if (logDate > endMs) matchesDate = false;
+    }
+
+    return matchesSearch && matchesEvent && matchesDate;
+  });
+
+  const hasActiveFilters = Boolean(searchTerm || selectedEventType !== 'ALL' || startDate || endDate);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <h1 className="font-serif text-2xl font-bold text-slate-900">Immutable Audit Trail Logs</h1>
           <p className="text-xs text-slate-500">Tamper-evident record of all platform authentication, document views, reviews & signatures</p>
         </div>
 
-        <div className="relative w-full sm:w-64">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search action or user..."
-            className="w-full text-xs pl-8 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-900 focus:outline-hidden"
-          />
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            {filteredLogs.length} Records Found
+          </span>
         </div>
       </div>
 
+      {/* FILTER CONTROLS BAR */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+          {/* Keyword Search */}
+          <div className="lg:col-span-4 space-y-1">
+            <label className="block text-[11px] font-mono font-bold uppercase text-slate-600">Search Query</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search action, email, or TX ref..."
+                className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-medium"
+              />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Event Type Filter */}
+          <div className="lg:col-span-3 space-y-1">
+            <label className="block text-[11px] font-mono font-bold uppercase text-slate-600">Event Type</label>
+            <div className="relative">
+              <select
+                value={selectedEventType}
+                onChange={(e) => setSelectedEventType(e.target.value)}
+                className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-semibold text-slate-900 appearance-none"
+              >
+                <option value="ALL">All Event Types</option>
+                <option value="Document Signed">Document Signed (QES / eIDAS)</option>
+                <option value="Payment Processed">Payment Processed (Escrow / Deposit)</option>
+                <option value="Document Uploaded / Review">Document Uploaded / Generated</option>
+                <option value="Legal & Tracfin Clearance">Legal & Tracfin AML Clearance</option>
+                <option value="User Authentication">User Authentication & Login</option>
+              </select>
+              <Filter className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Start Date */}
+          <div className="lg:col-span-2 space-y-1">
+            <label className="block text-[11px] font-mono font-bold uppercase text-slate-600">Start Date</label>
+            <div className="relative">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full text-xs pl-8 pr-2 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-mono font-medium text-slate-900"
+              />
+              <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* End Date */}
+          <div className="lg:col-span-2 space-y-1">
+            <label className="block text-[11px] font-mono font-bold uppercase text-slate-600">End Date</label>
+            <div className="relative">
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full text-xs pl-8 pr-2 py-2 bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900 focus:outline-none transition font-mono font-medium text-slate-900"
+              />
+              <Calendar className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Clear Filters Button */}
+          <div className="lg:col-span-1 flex items-center justify-end">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition flex items-center justify-center"
+                title="Clear all filters"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Date Range Preset Buttons */}
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
+          <span className="text-[10px] font-mono font-bold uppercase text-slate-400">Quick Ranges:</span>
+          <button
+            type="button"
+            onClick={() => setQuickDate(0)}
+            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] font-semibold transition"
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuickDate(7)}
+            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] font-semibold transition"
+          >
+            Last 7 Days
+          </button>
+          <button
+            type="button"
+            onClick={() => setQuickDate(30)}
+            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] font-semibold transition"
+          >
+            Last 30 Days
+          </button>
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] font-semibold transition"
+          >
+            All Time
+          </button>
+        </div>
+      </div>
+
+      {/* Audit Trail Table */}
       <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
@@ -763,41 +941,46 @@ export const AdminAuditLogs: React.FC = () => {
               {filteredLogs.length === 0 ? (
                 <EmptyState
                   title="No audit activity found"
-                  description="No audit events match the current filters."
+                  description="No audit events match the selected event type or date range filters."
                   icon={ShieldAlert}
                   variant="table"
                 />
               ) : (
                 filteredLogs.map((log) => (
-                <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 px-4 text-slate-500">
-                    {new Date(log.timestamp).toLocaleString()}
-                  </td>
-                  <td className="py-3 px-4 font-sans">
-                    <span className="font-semibold text-slate-900 block">{log.user_email || 'Anonymous'}</span>
-                    <span className="text-[10px] text-slate-400">{log.user_role || 'STAFF'}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-800 font-bold">
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-bold text-blue-900">
-                    {log.transaction_id || log.resource_id || '-'}
-                  </td>
-                  <td className="py-3 px-4 font-sans text-slate-700 max-w-sm">
-                    {log.details}
-                  </td>
-                  <td className="py-3 px-4 text-slate-500">
-                    {log.ip_address}
-                  </td>
-                  <td className="py-3 px-4 font-sans">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${log.result === 'SUCCESS' ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}`}>
-                      {log.result}
-                    </span>
-                  </td>
-                </tr>
-              )))}
+                  <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 px-4 text-slate-500">
+                      {new Date(log.timestamp).toLocaleString()}
+                    </td>
+                    <td className="py-3 px-4 font-sans">
+                      <span className="font-semibold text-slate-900 block">{log.user_email || 'Anonymous'}</span>
+                      <span className="text-[10px] text-slate-400">{log.user_role || 'STAFF'}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-800 font-bold">
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-bold text-blue-900">
+                      {log.transaction_id || log.resource_id || '-'}
+                    </td>
+                    <td className="py-3 px-4 font-sans text-slate-700 max-w-sm">
+                      {log.details}
+                    </td>
+                    <td className="py-3 px-4 text-slate-500">
+                      {log.ip_address}
+                    </td>
+                    <td className="py-3 px-4 font-sans">
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          log.result === 'SUCCESS' ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'
+                        }`}
+                      >
+                        {log.result}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

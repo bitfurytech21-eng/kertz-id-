@@ -1,9 +1,10 @@
 /**
  * Safe download utility avoiding window.open popup blockers in sandboxed iframes
  */
-export function safeDownload(url: string, filename?: string) {
+export function safeDownload(data: string | Blob, filename?: string) {
   try {
     const link = document.createElement('a');
+    const url = typeof data === 'string' ? data : URL.createObjectURL(data);
     link.href = url;
     if (filename) {
       link.download = filename;
@@ -16,7 +17,10 @@ export function safeDownload(url: string, filename?: string) {
       if (document.body.contains(link)) {
         document.body.removeChild(link);
       }
-    }, 150);
+      if (typeof data !== 'string') {
+        URL.revokeObjectURL(url);
+      }
+    }, 500);
   } catch (err) {
     console.error('Safe download error:', err);
   }

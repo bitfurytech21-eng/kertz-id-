@@ -937,6 +937,32 @@
   ],
   "audit_logs": [
     {
+      "id": "aud_1791108041864_ifnpm",
+      "timestamp": "2026-10-04T10:00:41.864Z",
+      "user_id": "usr_admin_001",
+      "user_email": "admin@kretz.site",
+      "user_role": "ADMIN",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_admin_001",
+      "details": "User signed in successfully with role ADMIN",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791108038211_l11wj",
+      "timestamp": "2026-10-04T10:00:38.211Z",
+      "user_id": "usr_admin_001",
+      "user_email": "admin@kretz.site",
+      "user_role": "ADMIN",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_admin_001",
+      "details": "User signed in successfully with role ADMIN",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
       "id": "aud_1791103803994_ihddp",
       "timestamp": "2026-10-04T08:50:03.994Z",
       "user_id": "usr_client_bitfury",
