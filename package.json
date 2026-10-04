@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "node -r ./scripts/node-polyfill.cjs ./node_modules/vite/bin/vite.js build",
+    "build": "vite build",
     "build:android": "vite build && npx cap sync android",
     "icons:generate": "node scripts/generate-icons.js",
     "start": "tsx server.ts",
