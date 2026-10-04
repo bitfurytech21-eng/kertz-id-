@@ -72,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const data = await api.auth.login(credentials);
       setUser(data.user);
+      return data;
     } finally {
       setIsLoading(false);
     }
@@ -100,8 +101,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verifyEmail = async (code: string, email?: string) => {
-    await api.auth.verifyEmail({ code, email });
-    await refreshProfile();
+    setIsLoading(true);
+    try {
+      await api.auth.verifyEmail({ code, email });
+      await refreshProfile();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = async () => {
@@ -119,6 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const data = await api.auth.demoSwitchRole(role);
       setUser(data.user);
+      return data;
     } finally {
       setIsLoading(false);
     }
