@@ -1253,7 +1253,7 @@ app.get('/api/transactions/:id/documents', authenticateJWT, (req: AuthenticatedR
 });
 
 // Upload Document (Encrypted at rest with AES-256-GCM)
-app.post('/api/transactions/:id/documents', authenticateJWT, upload.single('file'), (req: AuthenticatedRequest, res: Response) => {
+app.post('/api/transactions/:id/documents', authenticateJWT, upload.single('file') as any, (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const access = checkTransactionAccess(req, id);
   if (access.error || !access.tx) {
@@ -1433,7 +1433,7 @@ app.get('/api/documents/:documentId/versions', authenticateJWT, (req: Authentica
 });
 
 // Upload New Version of Existing Document
-app.post('/api/documents/:documentId/versions', authenticateJWT, upload.single('file'), (req: AuthenticatedRequest, res: Response) => {
+app.post('/api/documents/:documentId/versions', authenticateJWT, upload.single('file') as any, (req: AuthenticatedRequest, res: Response) => {
   const { documentId } = req.params;
   const db = loadDB();
   const doc = db.documents.find((d) => d.id === documentId);

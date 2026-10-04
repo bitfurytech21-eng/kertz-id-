@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.12.0",
+    "npm": ">=10.0.0"
   },
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build",
+    "build": "node -r ./scripts/node-polyfill.cjs ./node_modules/vite/bin/vite.js build",
     "build:android": "vite build && npx cap sync android",
     "icons:generate": "node scripts/generate-icons.js",
     "start": "tsx server.ts",
