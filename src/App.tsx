@@ -36,8 +36,9 @@ function Router() {
   }, []);
 
   const navigate = (path: string) => {
-    window.history.pushState({}, '', path);
-    setCurrentPath(path);
+    const safePath = path.startsWith('/') ? path : `/${path}`;
+    window.history.pushState({}, '', safePath);
+    setCurrentPath(safePath);
     window.scrollTo(0, 0);
   };
 
@@ -67,12 +68,9 @@ function Router() {
     );
   }
 
-  // Parse Path
   const path = currentPath;
 
-  // Render Component based on path
   const renderContent = () => {
-    // Public routes
     if (path === '/' || path === '') {
       return <LandingPage navigate={navigate} />;
     }
@@ -89,13 +87,11 @@ function Router() {
       return <VerifyEmailPage navigate={navigate} />;
     }
 
-    // Client Dashboard
     if (path === '/dashboard') {
       if (!user) return <LoginPage navigate={navigate} />;
       return <DashboardPage navigate={navigate} />;
     }
 
-    // Property Request creation / edit / view
     if (path === '/property-request') {
       if (!user) return <LoginPage navigate={navigate} />;
       return <PropertyRequestFormPage navigate={navigate} />;
@@ -111,13 +107,11 @@ function Router() {
       return <PropertyRequestViewPage navigate={navigate} requestId={id} />;
     }
 
-    // Transactions list
     if (path === '/transactions') {
       if (!user) return <LoginPage navigate={navigate} />;
       return <TransactionsListPage navigate={navigate} />;
     }
 
-    // Transaction Workspace routes: /transactions/:id, /transactions/:id/documents, etc.
     if (path.startsWith('/transactions/')) {
       if (!user) return <LoginPage navigate={navigate} />;
       const sub = path.replace('/transactions/', '');
@@ -127,7 +121,6 @@ function Router() {
       return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
     }
 
-    // Admin & Staff Routes (/admin, /admin/login, /admin/dashboard, etc.)
     if (path.startsWith('/admin')) {
       if (path === '/admin/login') {
         if (user && isStaff) {
@@ -176,7 +169,6 @@ function Router() {
       return <AdminDashboard navigate={navigate} />;
     }
 
-    // Fallback
     return <LandingPage navigate={navigate} />;
   };
 
@@ -185,8 +177,8 @@ function Router() {
       <Navbar currentPath={currentPath} navigate={navigate} />
       <main className="flex-1">{renderContent()}</main>
       <OfflineIndicator />
+      <ErrorDisplay />
 
-      {/* Footer */}
       <footer className="bg-slate-950 border-t border-slate-900 text-slate-400 text-xs py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
