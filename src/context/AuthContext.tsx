@@ -43,7 +43,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    const timeoutId = setTimeout(() => {
+    let timedOut = false;
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true;
       setIsLoading(false);
     }, 2500);
 
@@ -54,8 +56,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAuthToken(null);
       setUser(null);
     } finally {
-      clearTimeout(timeoutId);
-      setIsLoading(false);
+      if (!timedOut) {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+      }
     }
   }, []);
 
@@ -104,7 +108,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await api.auth.logout();
     } finally {
+      setAuthToken(null);
       setUser(null);
+      setIsLoading(false);
     }
   };
 
