@@ -8,7 +8,6 @@ import {
   FileCheck2,
   Activity,
   Layers,
-  Sparkles,
   Calendar,
   Building
 } from 'lucide-react';

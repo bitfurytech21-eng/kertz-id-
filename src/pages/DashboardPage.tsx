@@ -14,7 +14,6 @@ import {
   CheckSquare,
   DollarSign,
   Download,
-  Sparkles,
   MapPin,
   ExternalLink,
   MessageSquare,
@@ -169,7 +168,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
             className="px-3.5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-md shadow-xs transition-colors flex items-center gap-1.5"
             title="Browse all 207 luxury properties directly from kretz.site"
           >
-            <Sparkles className="w-4 h-4 text-slate-950" />
+            <Building className="w-4 h-4 text-slate-950" />
             <span>Explore 207 Kretz Properties</span>
           </button>
 
@@ -261,7 +260,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
                     <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          <Building className="w-3.5 h-3.5 text-amber-500" />
                           <span>Legal Team Property Match & Acquisition Proposal</span>
                         </div>
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">

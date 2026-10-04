@@ -10,6 +10,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
   const { user, isStaff, logout } = useAuth();
+  const cleanPath = (currentPath.split('?')[0].split('#')[0] || '/').replace(/\/+$/, '') || '/';
 
   return (
     <header className="sticky top-0 z-40 bg-black border-b border-neutral-800 text-white select-none">
@@ -63,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/dashboard')}
                   className={`px-3 py-2 rounded transition-colors ${
-                    currentPath === '/dashboard' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/dashboard' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Dashboard
@@ -71,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/property-request')}
                   className={`px-3 py-2 rounded transition-colors ${
-                    currentPath.startsWith('/property-request') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath.startsWith('/property-request') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Property Requirements
@@ -79,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/transactions')}
                   className={`px-3 py-2 rounded transition-colors ${
-                    currentPath.startsWith('/transactions') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath.startsWith('/transactions') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   My Transactions
@@ -91,7 +92,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/dashboard')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/dashboard' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/admin/dashboard' || cleanPath === '/admin' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Dashboard
@@ -99,7 +100,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/clients')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/clients' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath.startsWith('/admin/clients') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Clients
@@ -107,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/property-requests')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/property-requests' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath.startsWith('/admin/property-requests') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Requests
@@ -115,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/transactions')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath.startsWith('/admin/transactions') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath.startsWith('/admin/transactions') ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Transactions
@@ -123,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/documents')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/documents' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/admin/documents' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Documents
@@ -131,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/compliance')}
                   className={`px-2.5 py-1.5 rounded transition-colors border ${
-                    currentPath === '/admin/compliance' ? 'bg-white text-black border-white font-bold' : 'text-neutral-300 border-neutral-700 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/admin/compliance' ? 'bg-white text-black border-white font-bold' : 'text-neutral-300 border-neutral-700 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Compliance & AML
@@ -139,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/legal-review')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/legal-review' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/admin/legal-review' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Legal Checks
@@ -147,7 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, navigate }) => {
                 <button
                   onClick={() => navigate('/admin/audit-logs')}
                   className={`px-2.5 py-1.5 rounded transition-colors ${
-                    currentPath === '/admin/audit-logs' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
+                    cleanPath === '/admin/audit-logs' ? 'bg-white text-black font-bold' : 'text-neutral-300 hover:text-white hover:bg-neutral-900'
                   }`}
                 >
                   Audit Logs

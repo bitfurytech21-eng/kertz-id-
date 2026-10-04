@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building, ArrowLeft, Edit3, FolderLock, Shield, Clock, Calendar, CheckCircle2, AlertCircle, Sparkles, Link as LinkIcon } from 'lucide-react';
+import { Building, ArrowLeft, Edit3, FolderLock, Shield, Clock, Calendar, CheckCircle2, AlertCircle, Link as LinkIcon } from 'lucide-react';
 import { api } from '../services/api';
 import { PropertyRequest, KretzProperty } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
@@ -151,7 +151,7 @@ export const PropertyRequestViewPage: React.FC<PropertyRequestViewPageProps> = (
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-5 shadow-sm text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" />
+              <Building className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-serif font-bold text-amber-300">
                 Match from Registered Kretz Portfolio
               </span>

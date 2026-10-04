@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Calendar,
-  Sparkles,
   FileCheck,
   Scale,
   Clock,

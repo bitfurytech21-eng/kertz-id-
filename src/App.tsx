@@ -24,11 +24,13 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 
 function Router() {
   const { user, isLoading, isStaff } = useAuth();
-  const [currentPath, setCurrentPath] = useState<string>(window.location.pathname || '/');
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    return (window.location.pathname || '/') + (window.location.search || '') + (window.location.hash || '');
+  });
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentPath(window.location.pathname || '/');
+      setCurrentPath((window.location.pathname || '/') + (window.location.search || '') + (window.location.hash || ''));
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -67,61 +69,72 @@ function Router() {
     );
   }
 
-  const path = currentPath;
+  // Normalize path by stripping query params, hash, and trailing slashes
+  const rawPath = currentPath.split('#')[0];
+  const [pathOnly] = rawPath.split('?');
+  const normalizedPath = (pathOnly === '/' ? '/' : pathOnly.replace(/\/+$/, '')) || '/';
 
   const renderContent = () => {
-    if (path === '/' || path === '') {
+    if (normalizedPath === '/' || normalizedPath === '') {
       return <LandingPage navigate={navigate} />;
     }
-    if (path === '/login') {
+    if (normalizedPath === '/login') {
+      if (user) {
+        return isStaff ? <AdminDashboard navigate={navigate} /> : <DashboardPage navigate={navigate} />;
+      }
       return <LoginPage navigate={navigate} />;
     }
-    if (path === '/register') {
+    if (normalizedPath === '/register') {
+      if (user) {
+        return isStaff ? <AdminDashboard navigate={navigate} /> : <DashboardPage navigate={navigate} />;
+      }
       return <RegisterPage navigate={navigate} />;
     }
-    if (path === '/forgot-password') {
+    if (normalizedPath === '/forgot-password') {
       return <ForgotPasswordPage navigate={navigate} />;
     }
-    if (path.startsWith('/verify-email')) {
+    if (normalizedPath === '/verify-email' || normalizedPath.startsWith('/verify-email')) {
       return <VerifyEmailPage navigate={navigate} />;
     }
 
-    if (path === '/dashboard') {
+    if (normalizedPath === '/dashboard') {
       if (!user) return <LoginPage navigate={navigate} />;
+      if (isStaff) return <AdminDashboard navigate={navigate} />;
       return <DashboardPage navigate={navigate} />;
     }
 
-    if (path === '/property-request') {
+    if (normalizedPath === '/property-request') {
       if (!user) return <LoginPage navigate={navigate} />;
       return <PropertyRequestFormPage navigate={navigate} />;
     }
-    if (path.startsWith('/property-request/edit/')) {
+    if (normalizedPath.startsWith('/property-request/edit/')) {
       if (!user) return <LoginPage navigate={navigate} />;
-      const id = path.replace('/property-request/edit/', '');
+      const id = normalizedPath.replace('/property-request/edit/', '');
       return <PropertyRequestFormPage navigate={navigate} requestId={id} />;
     }
-    if (path.startsWith('/property-request/')) {
+    if (normalizedPath.startsWith('/property-request/')) {
       if (!user) return <LoginPage navigate={navigate} />;
-      const id = path.replace('/property-request/', '');
+      const id = normalizedPath.replace('/property-request/', '');
       return <PropertyRequestViewPage navigate={navigate} requestId={id} />;
     }
 
-    if (path === '/transactions') {
+    if (normalizedPath === '/transactions') {
       if (!user) return <LoginPage navigate={navigate} />;
       return <TransactionsListPage navigate={navigate} />;
     }
 
-    if (path.startsWith('/transactions/')) {
+    if (normalizedPath.startsWith('/transactions/')) {
       if (!user) return <LoginPage navigate={navigate} />;
-      const sub = path.replace('/transactions/', '');
+      const sub = normalizedPath.replace('/transactions/', '');
       const parts = sub.split('/');
       const txId = parts[0];
       const tab = parts[1] || 'overview';
       return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
     }
 
-    if (path.startsWith('/admin')) {
-      if (path === '/admin/login') {
+    // Admin & Staff Navigation Routes
+    if (normalizedPath.startsWith('/admin')) {
+      if (normalizedPath === '/admin/login') {
         if (user && isStaff) {
           return <AdminDashboard navigate={navigate} />;
         }
@@ -132,43 +145,67 @@ function Router() {
         return <AdminLoginPage navigate={navigate} />;
       }
 
-      if (path === '/admin' || path === '/admin/dashboard') {
+      if (normalizedPath === '/admin' || normalizedPath === '/admin/dashboard') {
         return <AdminDashboard navigate={navigate} />;
       }
-      if (path === '/admin/clients') {
+      if (normalizedPath === '/admin/clients') {
         return <AdminClients navigate={navigate} />;
       }
-      if (path.startsWith('/admin/clients/')) {
-        const clientId = path.replace('/admin/clients/', '');
+      if (normalizedPath.startsWith('/admin/clients/')) {
+        const clientId = normalizedPath.replace('/admin/clients/', '');
         return <AdminClients navigate={navigate} selectedClientId={clientId} />;
       }
-      if (path === '/admin/property-requests') {
+      if (normalizedPath === '/admin/property-requests') {
         return <AdminPropertyRequests navigate={navigate} />;
       }
-      if (path.startsWith('/admin/property-requests/')) {
-        const reqId = path.replace('/admin/property-requests/', '');
+      if (normalizedPath.startsWith('/admin/property-requests/')) {
+        const reqId = normalizedPath.replace('/admin/property-requests/', '');
         return <PropertyRequestViewPage navigate={navigate} requestId={reqId} />;
       }
-      if (path === '/admin/transactions') {
+      if (normalizedPath === '/admin/transactions') {
         return <TransactionsListPage navigate={navigate} />;
       }
-      if (path.startsWith('/admin/transactions/')) {
-        const txId = path.replace('/admin/transactions/', '');
-        return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab="overview" />;
+      if (normalizedPath.startsWith('/admin/transactions/')) {
+        const sub = normalizedPath.replace('/admin/transactions/', '');
+        const parts = sub.split('/');
+        const txId = parts[0];
+        const tab = parts[1] || 'overview';
+        return <TransactionWorkspacePage navigate={navigate} transactionId={txId} initialTab={tab} />;
       }
-      if (path === '/admin/documents') {
+      if (normalizedPath === '/admin/documents') {
         return <AdminDocuments navigate={navigate} />;
       }
-      if (path === '/admin/compliance' || path === '/admin/legal-review' || path === '/admin/offers') {
+      if (normalizedPath === '/admin/compliance' || normalizedPath === '/admin/legal-review' || normalizedPath === '/admin/offers') {
         return <AdminComplianceDashboard navigate={navigate} />;
       }
-      if (path === '/admin/audit-logs') {
+      if (normalizedPath === '/admin/audit-logs') {
         return <AdminAuditLogs />;
       }
       return <AdminDashboard navigate={navigate} />;
     }
 
-    return <LandingPage navigate={navigate} />;
+    // High-fidelity 404 Route Fallback
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-6">
+        <div className="w-16 h-16 mx-auto rounded-full bg-slate-900 border border-slate-800 text-amber-400 flex items-center justify-center font-serif text-2xl font-bold shadow-xl">
+          404
+        </div>
+        <div className="space-y-2">
+          <h2 className="font-serif text-2xl font-bold text-slate-900">Page Not Found</h2>
+          <p className="text-xs text-slate-500 font-mono">
+            The requested path <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700">{normalizedPath}</span> could not be found or has been relocated.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <button
+            onClick={() => navigate(isStaff ? '/admin/dashboard' : user ? '/dashboard' : '/')}
+            className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-lg transition"
+          >
+            &larr; Return to {isStaff ? 'Admin Console' : user ? 'Workspace Dashboard' : 'Home'}
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (

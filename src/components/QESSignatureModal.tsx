@@ -39,7 +39,6 @@ export const QESSignatureModal: React.FC<QESSignatureModalProps> = ({
   const [step, setStep] = useState<'review' | 'otp' | 'sign' | 'complete'>('review');
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [demoOtpCode, setDemoOtpCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [session, setSession] = useState<QESContractSession | null>(contract.qes_session || null);
@@ -69,10 +68,9 @@ export const QESSignatureModal: React.FC<QESSignatureModalProps> = ({
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await api.qes.sendOtp(transaction.id, contract.id);
+      await api.qes.sendOtp(transaction.id, contract.id);
       setOtpSent(true);
-      setDemoOtpCode(res.otpCode);
-      setOtpCode(res.otpCode); // pre-populate for frictionless testing
+      setOtpCode('');
       setStep('otp');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to send 2FA OTP code.');
@@ -302,12 +300,6 @@ export const QESSignatureModal: React.FC<QESSignatureModalProps> = ({
                   A 6-digit eIDAS authentication code has been dispatched to your registered credentials ({user?.email})
                 </p>
               </div>
-
-              {demoOtpCode && (
-                <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 text-xs font-mono">
-                  Your 2FA Security OTP: <strong className="text-blue-700 text-sm tracking-widest">{demoOtpCode}</strong>
-                </div>
-              )}
 
               <div className="flex justify-center">
                 <input

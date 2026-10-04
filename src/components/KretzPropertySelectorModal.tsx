@@ -12,7 +12,6 @@ import {
   ExternalLink,
   ChevronRight,
   Filter,
-  Sparkles
 } from 'lucide-react';
 import { KretzProperty } from '../types';
 import { api } from '../services/api';
@@ -185,7 +184,7 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
               disabled={syncing}
               className="px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shrink-0"
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Building className="w-3.5 h-3.5" />
               {syncing ? 'Syncing Routes...' : 'Fetch Routes from kretz.site'}
             </button>
           </div>

@@ -77,7 +77,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="alex.dupont@kretz.site"
+                  placeholder="client@domain.com"
                   className="w-full text-xs pl-9 pr-3.5 py-3 bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900 focus:border-slate-900 focus:outline-none transition"
                 />
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
@@ -152,8 +152,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
           </form>
         </div>
 
-        {/* Client Registration & Staff Portal Navigation */}
-        <div className="text-center space-y-4">
+        {/* Client Registration Navigation */}
+        <div className="text-center space-y-3">
           <p className="text-xs text-slate-600">
             Don't have a private buyer account?{' '}
             <button
@@ -164,19 +164,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ navigate }) => {
             </button>
           </p>
 
-          <div className="pt-3 border-t border-slate-200/80 text-center">
-            <p className="text-xs text-slate-500">
-              Legal counsel or transaction officer?{' '}
-              <button
-                onClick={() => navigate('/admin/login')}
-                className="text-slate-800 hover:text-slate-950 font-semibold underline"
-              >
-                Access Legal Staff Portal &rarr;
-              </button>
-            </p>
-          </div>
-
-          <div className="pt-1 flex items-center justify-center gap-4 text-[11px] text-slate-500 font-mono">
+          <div className="pt-3 flex items-center justify-center gap-4 text-[11px] text-slate-600 font-mono">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
               256-Bit SSL

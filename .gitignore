@@ -6,3 +6,5 @@ coverage/
 *.log
 .env*
 !.env.example
+data/secure_storage/*
+!data/secure_storage/.gitkeep

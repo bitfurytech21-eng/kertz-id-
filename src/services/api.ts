@@ -161,15 +161,6 @@ export const api = {
         setAuthToken(null);
       }
     },
-
-    demoSwitchRole: async (role: UserRole) => {
-      const data = await request<{ message: string; token: string; user: User }>('/api/auth/demo-switch', {
-        method: 'POST',
-        body: JSON.stringify({ role }),
-      });
-      setAuthToken(data.token);
-      return data;
-    },
   },
 
   properties: {

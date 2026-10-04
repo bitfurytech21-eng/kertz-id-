@@ -15,7 +15,6 @@ import {
   Hash,
   Scale,
   DollarSign,
-  Sparkles,
   Loader2,
 } from 'lucide-react';
 import { Transaction, Payment } from '../types';
@@ -435,7 +434,7 @@ TAMPER-EVIDENT STATUS:    IMMUTABLE • CERTIFIED BY KRETZ LEGAL VAULT
                   <div className="flex items-center gap-2">
                     <span className="text-emerald-400 text-[11px]">Current Stage:</span>
                     <span className="px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3 text-emerald-400" />
+                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                       {statusUpdateResult.new_status} (Step {statusUpdateResult.current_step}/8)
                     </span>
                   </div>

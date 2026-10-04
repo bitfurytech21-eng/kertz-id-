@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Save, Send, Shield, AlertCircle, ArrowLeft, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { Building, Save, Send, Shield, AlertCircle, ArrowLeft, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { PropertyRequest, KretzProperty } from '../types';
@@ -166,6 +166,24 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
         })
         .catch((err) => setError(err.message))
         .finally(() => setLoading(false));
+    } else {
+      // Check if property_id was passed via query params (e.g. from Dashboard or Portfolio)
+      const params = new URLSearchParams(window.location.search);
+      const queryPropId = params.get('property_id') || params.get('ref') || params.get('id');
+      if (queryPropId) {
+        setPropertyNumberInput(queryPropId);
+        setLoading(true);
+        api.properties
+          .lookup(queryPropId)
+          .then((res) => {
+            if (res.property) {
+              handleSelectKretzProperty(res.property);
+              setSavedSuccess(`Property ${res.property.id} (${res.property.name}) automatically imported into acquisition specifications.`);
+            }
+          })
+          .catch(() => {})
+          .finally(() => setLoading(false));
+      }
     }
   }, [requestId]);
 
@@ -327,42 +345,10 @@ export const PropertyRequestFormPage: React.FC<PropertyRequestFormPageProps> = (
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <Building className="w-3.5 h-3.5 text-amber-400" />
                 <span>Import Property Details</span>
               </>
             )}
-          </button>
-        </div>
-
-        {/* Quick Sample Importers */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-neutral-500">
-          <span className="font-mono text-neutral-400">Quick Import Samples:</span>
-          <button
-            type="button"
-            onClick={() => {
-              setPropertyNumberInput('https://kretz.site/#/annonce/kp1-11270b/bastide');
-              setTimeout(() => {
-                const btn = document.querySelector('button[type="button"][title="import-trigger"]') as HTMLButtonElement;
-                if (btn) btn.click();
-              }, 50);
-            }}
-            className="px-2 py-0.5 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-mono transition text-[10px]"
-          >
-            https://kretz.site/#/annonce/kp1-11270b/bastide
-          </button>
-          <button
-            type="button"
-            onClick={() => setPropertyNumberInput('KP1-11270B')}
-            className="px-2 py-0.5 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-mono transition text-[10px]"
-          >
-            Ref: KP1-11270B
-          </button>
-          <button
-            type="button"
-            onClick={() => setPropertyNumberInput('KP-PARIS-001')}
-            className="px-2 py-0.5 rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-mono transition text-[10px]"
-          >
-            Ref: KP-PARIS-001
           </button>
         </div>
       </div>

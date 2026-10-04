@@ -13,7 +13,6 @@ import {
   FileText,
   DollarSign,
   Layers,
-  Sparkles,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';

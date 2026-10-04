@@ -112,7 +112,6 @@ export const QESProviderIntegrationModule: React.FC<QESProviderIntegrationModule
   const [isSigningOpen, setIsSigningOpen] = useState(false);
   const [signingStep, setSigningStep] = useState<'id_check' | 'cooling_off' | 'otp' | 'draw' | 'sealed'>('id_check');
   const [otpCode, setOtpCode] = useState('');
-  const [demoOtp, setDemoOtp] = useState<string | null>(null);
   const [acceptedCoolingOff, setAcceptedCoolingOff] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -150,9 +149,8 @@ export const QESProviderIntegrationModule: React.FC<QESProviderIntegrationModule
     setLoading(true);
     setErrorMsg(null);
     try {
-      const res = await api.qes.sendOtp(transaction.id, contract.id);
-      setDemoOtp(res.otpCode);
-      setOtpCode(res.otpCode); // Pre-fill for seamless demonstration
+      await api.qes.sendOtp(transaction.id, contract.id);
+      setOtpCode('');
       setSigningStep('otp');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to dispatch 2FA OTP code.');
@@ -621,12 +619,6 @@ export const QESProviderIntegrationModule: React.FC<QESProviderIntegrationModule
                   <p className="text-slate-500 text-xs">
                     Dispatched via certified SMS & email to your registered credentials ({user?.email})
                   </p>
-
-                  {demoOtp && (
-                    <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 text-xs font-mono">
-                      Your 2FA Security OTP: <strong className="text-blue-700 text-base tracking-widest">{demoOtp}</strong>
-                    </div>
-                  )}
 
                   <input
                     type="text"

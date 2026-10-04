@@ -513,9 +513,57 @@ function getInitialDatabase(): DatabaseSchema {
     updated_at: now,
   };
 
+  const clientUser: User = {
+    id: 'usr_client_001',
+    email: 'alex.dupont@kretz.site',
+    password_hash: passwordHash,
+    role: 'CLIENT',
+    is_email_verified: true,
+    created_at: now,
+    updated_at: now,
+  };
+
+  const clientProfile: UserProfile = {
+    id: 'prof_client_001',
+    user_id: 'usr_client_001',
+    first_name: 'Alex',
+    last_name: 'Dupont',
+    phone_number: '+33 6 12 34 56 78',
+    country: 'France',
+    state: 'Île-de-France',
+    kyc_status: 'VERIFIED',
+    terms_accepted_at: now,
+    created_at: now,
+    updated_at: now,
+  };
+
+  const bitfuryUser: User = {
+    id: 'usr_client_bitfury',
+    email: 'bitfurytech21@gmail.com',
+    password_hash: passwordHash,
+    role: 'CLIENT',
+    is_email_verified: true,
+    created_at: now,
+    updated_at: now,
+  };
+
+  const bitfuryProfile: UserProfile = {
+    id: 'prof_client_bitfury',
+    user_id: 'usr_client_bitfury',
+    first_name: 'Bitfury',
+    last_name: 'Tech',
+    phone_number: '+33 6 12 34 56 78',
+    country: 'France',
+    state: 'Île-de-France',
+    kyc_status: 'VERIFIED',
+    terms_accepted_at: now,
+    created_at: now,
+    updated_at: now,
+  };
+
   return {
-    users: [legalOfficer, transOfficer, adminUser],
-    user_profiles: [legalProfile, transProfile, adminProfile],
+    users: [clientUser, bitfuryUser, legalOfficer, transOfficer, adminUser],
+    user_profiles: [clientProfile, bitfuryProfile, legalProfile, transProfile, adminProfile],
     property_requests: [],
     transactions: [],
     transaction_parties: [],

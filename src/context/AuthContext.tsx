@@ -20,7 +20,6 @@ interface AuthContextType {
   }) => Promise<{ verificationCode?: string }>;
   verifyEmail: (code: string, email?: string) => Promise<void>;
   logout: () => Promise<void>;
-  demoSwitch: (role: UserRole) => Promise<void>;
   refreshProfile: () => Promise<void>;
   isClient: boolean;
   isStaff: boolean;
@@ -114,16 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const demoSwitch = async (role: UserRole) => {
-    setIsLoading(true);
-    try {
-      const data = await api.auth.demoSwitchRole(role);
-      setUser(data.user);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const isClient = user?.role === 'CLIENT';
   const isLegalOfficer = user?.role === 'LEGAL_OFFICER';
   const isTransactionOfficer = user?.role === 'TRANSACTION_OFFICER';
@@ -139,7 +128,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         verifyEmail,
         logout,
-        demoSwitch,
         refreshProfile,
         isClient,
         isStaff,

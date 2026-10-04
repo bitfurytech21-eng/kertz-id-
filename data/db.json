@@ -54,6 +54,25 @@
       "is_email_verified": true,
       "created_at": "2026-10-04T07:54:50.818Z",
       "updated_at": "2026-10-04T07:54:55.778Z"
+    },
+    {
+      "id": "usr_client_bitfury",
+      "email": "bitfurytech21@gmail.com",
+      "password_hash": "$2b$10$Kv8CThIOqoA0JjSZiTGRF.8UCvf4ByBCmrwhadjhCuK0WVJhNfRsy",
+      "role": "CLIENT",
+      "is_email_verified": true,
+      "verification_code": "123456",
+      "created_at": "2026-10-04T08:26:57.827Z",
+      "updated_at": "2026-10-04T08:26:57.827Z"
+    },
+    {
+      "id": "usr_1791102513425_psy6",
+      "email": "newbuyer@example.com",
+      "password_hash": "$2b$10$JvzNH.Boqr/IgiiNoZZUY.XgsK6oRZsqqeYungtdvReLVvZVNusfa",
+      "role": "CLIENT",
+      "is_email_verified": true,
+      "created_at": "2026-10-04T08:28:33.425Z",
+      "updated_at": "2026-10-04T08:28:33.425Z"
     }
   ],
   "user_profiles": [
@@ -138,6 +157,31 @@
       "terms_accepted_at": "2026-10-04T07:54:50.818Z",
       "created_at": "2026-10-04T07:54:50.818Z",
       "updated_at": "2026-10-04T07:54:50.818Z"
+    },
+    {
+      "user_id": "usr_client_bitfury",
+      "first_name": "Bitfury",
+      "last_name": "Tech",
+      "phone_number": "+33 6 12 34 56 78",
+      "country": "France",
+      "state": "Île-de-France",
+      "date_of_birth": "1990-01-01",
+      "target_closing_date": "2026-12-31",
+      "kyc_status": "VERIFIED",
+      "verified_at": "2026-10-04T08:26:57.827Z"
+    },
+    {
+      "id": "prof_usr_1791102513425_psy6",
+      "user_id": "usr_1791102513425_psy6",
+      "first_name": "Newbuyer",
+      "last_name": "Member",
+      "phone_number": "+33 6 12 34 56 78",
+      "country": "France",
+      "state": "Île-de-France",
+      "kyc_status": "VERIFIED",
+      "terms_accepted_at": "2026-10-04T08:28:33.425Z",
+      "created_at": "2026-10-04T08:28:33.425Z",
+      "updated_at": "2026-10-04T08:28:33.425Z"
     }
   ],
   "property_requests": [
@@ -892,6 +936,120 @@
     }
   ],
   "audit_logs": [
+    {
+      "id": "aud_1791103803994_ihddp",
+      "timestamp": "2026-10-04T08:50:03.994Z",
+      "user_id": "usr_client_bitfury",
+      "user_email": "bitfurytech21@gmail.com",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_client_bitfury",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102524271_wpuuj",
+      "timestamp": "2026-10-04T08:28:44.271Z",
+      "user_id": "usr_client_bitfury",
+      "user_email": "bitfurytech21@gmail.com",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_client_bitfury",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102513435_feq79",
+      "timestamp": "2026-10-04T08:28:33.435Z",
+      "user_id": "usr_1791102513425_psy6",
+      "user_email": "newbuyer@example.com",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_1791102513425_psy6",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102513305_6gexc",
+      "timestamp": "2026-10-04T08:28:33.305Z",
+      "user_id": "usr_admin_001",
+      "user_email": "admin@kretz.site",
+      "user_role": "ADMIN",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_admin_001",
+      "details": "User signed in successfully with role ADMIN",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102513168_bwney",
+      "timestamp": "2026-10-04T08:28:33.168Z",
+      "user_id": "usr_client_001",
+      "user_email": "alex.dupont@kretz.site",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_client_001",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102513013_eoo91",
+      "timestamp": "2026-10-04T08:28:33.013Z",
+      "user_id": "usr_client_bitfury",
+      "user_email": "bitfurytech21@gmail.com",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_client_bitfury",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102384466_154wy",
+      "timestamp": "2026-10-04T08:26:24.466Z",
+      "user_id": "usr_admin_001",
+      "user_email": "admin@kretz.site",
+      "user_role": "ADMIN",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_admin_001",
+      "details": "User signed in successfully with role ADMIN",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791102384332_q78wn",
+      "timestamp": "2026-10-04T08:26:24.332Z",
+      "user_email": "bitfurytech21@gmail.com",
+      "action": "LOGIN_FAILED",
+      "resource_type": "AUTH",
+      "details": "Invalid credentials provided.",
+      "ip_address": "127.0.0.1",
+      "result": "FAILURE"
+    },
+    {
+      "id": "aud_1791102384301_oi781",
+      "timestamp": "2026-10-04T08:26:24.301Z",
+      "user_id": "usr_client_001",
+      "user_email": "alex.dupont@kretz.site",
+      "user_role": "CLIENT",
+      "action": "LOGIN_SUCCESS",
+      "resource_type": "AUTH",
+      "resource_id": "usr_client_001",
+      "details": "User signed in successfully with role CLIENT",
+      "ip_address": "127.0.0.1",
+      "result": "SUCCESS"
+    },
     {
       "id": "aud_1791100859613_u5ida",
       "timestamp": "2026-10-04T08:00:59.613Z",

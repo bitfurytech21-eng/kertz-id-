@@ -80,6 +80,12 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
   const { user, isStaff, isLegalOfficer, isTransactionOfficer, isAdmin } = useAuth();
 
   const [activeTab, setActiveTab] = useState<string>(initialTab);
+
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [legalReview, setLegalReview] = useState<LegalReview | null>(null);

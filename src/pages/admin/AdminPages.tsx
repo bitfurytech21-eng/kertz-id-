@@ -16,7 +16,6 @@ import {
   ArrowRight,
   ExternalLink,
   Plus,
-  Sparkles,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import {
@@ -100,13 +99,13 @@ export const AdminDashboard: React.FC<{ navigate: (path: string) => void }> = ({
           className="p-5 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 hover:border-amber-400 rounded-xl shadow-xs text-left transition-all space-y-2 group"
         >
           <div className="w-9 h-9 bg-amber-400 text-slate-950 rounded-lg flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
+            <Building className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-sm text-slate-900 group-hover:text-amber-900">
-            Search Responder
+            Property Portfolio Matches
           </h3>
           <p className="text-xs text-slate-500 leading-relaxed">
-            Match 207 listings from kretz.site to client searches.
+            Match verified listings from kretz.site to client searches.
           </p>
         </button>
 
@@ -397,7 +396,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
                       className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded shadow-xs text-xs inline-flex items-center gap-1 transition"
                       title="Search 207 Kretz properties and respond to client"
                     >
-                      <Sparkles className="w-3.5 h-3.5" />
+                      <Building className="w-3.5 h-3.5" />
                       <span>{r.matched_property ? 'Update Match' : 'Respond with Property'}</span>
                     </button>
 
