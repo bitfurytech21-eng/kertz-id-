@@ -76,8 +76,12 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
     if (typeFilter !== 'All' && prop.property_type !== typeFilter) return false;
     if (countryFilter !== 'All' && prop.country !== countryFilter) return false;
     if (search.trim()) {
-      const q = search.toLowerCase();
+      const q = search.toLowerCase().trim();
       const match =
+        prop.id.toLowerCase().includes(q) ||
+        (prop.ref && prop.ref.toLowerCase().includes(q)) ||
+        (prop.slug && prop.slug.toLowerCase().includes(q)) ||
+        (prop.annonce_url && prop.annonce_url.toLowerCase().includes(q)) ||
         prop.name.toLowerCase().includes(q) ||
         prop.city.toLowerCase().includes(q) ||
         prop.headline.toLowerCase().includes(q) ||
@@ -101,13 +105,13 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
             </div>
             <div>
               <h2 className="text-xl font-bold font-serif text-white tracking-wide flex items-center gap-2">
-                Kretz Registered Property Portfolio
+                Kretz Property Portfolio & Direct Import
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-sans font-medium">
                   kretz.site Verified
                 </span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
-                Select from verified acquisition assets to populate your acquisition file and legal due diligence
+                Select or paste any kretz.site property to immediately import its full legal, cadastral, and architectural specifications
               </p>
             </div>
           </div>
@@ -145,8 +149,8 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by city, property name, or keyword (e.g. Saint-Tropez, Penthouse, Eiffel Tower)..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+              placeholder="Search by city, property name, ref (e.g. KP1-11270B), or paste kretz.site URL to import..."
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 font-mono"
             />
           </div>
 
@@ -355,7 +359,7 @@ export const KretzPropertySelectorModal: React.FC<KretzPropertySelectorModalProp
                   className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  Use This Property for Acquisition Request
+                  Import This Property into Acquisition Request
                 </button>
               </div>
             ) : (

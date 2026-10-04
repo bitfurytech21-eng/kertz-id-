@@ -45,6 +45,15 @@
       "email_verification_token": "544607",
       "created_at": "2026-10-04T00:44:47.310Z",
       "updated_at": "2026-10-04T00:44:47.310Z"
+    },
+    {
+      "id": "usr_1791100490692_6vk5",
+      "email": "melissamenorsophia@gmail.com",
+      "password_hash": "$2b$10$n8cAY9eUnMuUuTPCjZ3hwOOUjO/zF0pgsQy6C6GqWY4w8YDekMBZS",
+      "role": "CLIENT",
+      "is_email_verified": true,
+      "created_at": "2026-10-04T07:54:50.818Z",
+      "updated_at": "2026-10-04T07:54:55.778Z"
     }
   ],
   "user_profiles": [
@@ -114,9 +123,236 @@
       "terms_accepted_at": "2026-10-04T00:44:47.310Z",
       "created_at": "2026-10-04T00:44:47.310Z",
       "updated_at": "2026-10-04T00:44:47.310Z"
+    },
+    {
+      "id": "prof_1791100490692_u5j0",
+      "user_id": "usr_1791100490692_6vk5",
+      "first_name": "Melissa",
+      "last_name": "Sophia",
+      "phone_number": "15444222118",
+      "country": "Switzerland",
+      "state": "Île-de-France",
+      "date_of_birth": "1988-06-15",
+      "target_closing_date": "2026-12-03",
+      "kyc_status": "PENDING",
+      "terms_accepted_at": "2026-10-04T07:54:50.818Z",
+      "created_at": "2026-10-04T07:54:50.818Z",
+      "updated_at": "2026-10-04T07:54:50.818Z"
     }
   ],
   "property_requests": [
+    {
+      "id": "PR-2026-000003",
+      "user_id": "usr_1791100490692_6vk5",
+      "property_type": "House",
+      "preferred_country": "France",
+      "preferred_state": "Provence-Alpes-Côte-d'Azur",
+      "preferred_city": "Aix En Provence",
+      "preferred_neighborhood": "Aix En Provence (Aix)",
+      "min_size_sqm": 611,
+      "max_size_sqm": 661,
+      "bedrooms": 7,
+      "budget": 4595000,
+      "currency": "EUR",
+      "intended_use": "Residential",
+      "purchase_structure": "Cash",
+      "timeframe": "1 to 3 months",
+      "additional_requirements": "House - Aix En Provence (Aix) (4 595 000 €)",
+      "special_instructions": "Direct acquisition inquiry for registered Kretz asset: Bastide d’exception du 19e vue Sainte-Victoire (Ref: KP1-11270B, Cadastre: Ai000-000-KE-0162, Jurisdiction: Chambre des Notaires de Aix). Title status: Freehold.",
+      "status": "PROPERTY_IDENTIFIED",
+      "created_at": "2026-10-04T07:55:58.849Z",
+      "updated_at": "2026-10-04T07:55:59.076Z",
+      "matched_property_id": "KP1-11270B",
+      "matched_property": {
+        "id": "KP1-11270B",
+        "name": "Bastide d’exception du 19e vue Sainte-Victoire",
+        "slug": "kp1-11270b-bastide",
+        "headline": "House - Aix En Provence (Aix) (4 595 000 €)",
+        "description": "Bastide d’exception du 19e vue Sainte-Victoire\n\nSituated in the prestigious setting of Aix En Provence (Aix), this exceptional provençal mas encompasses approximately 611 m² of refined living space, complemented by 12 magnificent rooms including 7 luxury bedroom suites.\n\nDesigned for sophisticated entertaining and everyday serenity, the residence features expansive open-plan reception spaces, floor-to-ceiling windows inviting abundant natural light, and bespoke high-end finishes throughout. An extraordinary opportunity presented exclusively by Kretz Family Real Estate.",
+        "property_type": "House",
+        "address": "Aix En Provence (Aix)",
+        "city": "Aix En Provence",
+        "state_region": "Provence-Alpes-Côte-d'Azur",
+        "country": "France",
+        "cadastral_id": "Ai000-000-KE-0162",
+        "land_registry_ref": "AIXENP-VOL-2024-P-1062",
+        "asking_price": 4595000,
+        "currency": "EUR",
+        "living_area_sqm": 611,
+        "land_area_sqm": 11000,
+        "bedrooms": 7,
+        "bathrooms": 6,
+        "reception_rooms": 5,
+        "architectural_style": "House",
+        "notary_jurisdiction": "Chambre des Notaires de Aix",
+        "legal_status": "AVAILABLE",
+        "features": [
+          "Provençal Mas",
+          "611 m²"
+        ],
+        "key_amenities": [
+          "Heated Swimming Pool",
+          "Private Balcony",
+          "Landscaped Garden",
+          "Security & Biometric Alarm"
+        ],
+        "legal_title_type": "Freehold",
+        "due_diligence_pack_ready": true,
+        "cadastral_status": "Compliant & Demarcated (Cadastre Officiel DGFiP)",
+        "tax_compliance_status": "Verified (Taxe Foncière, IFI Valuation, Urbanisme Clear)",
+        "energy_rating": "C",
+        "images": {
+          "hero": "https://files.kretzrealestate.com/42f0496fe03d7f9b544b43827966bf3b.jpg",
+          "gallery": [
+            "https://files.kretzrealestate.com/139d6158bc32772122506a9cb3b2f5a9.jpg",
+            "https://files.kretzrealestate.com/de6b718cd4c564b09779513846eff20.jpg",
+            "https://files.kretzrealestate.com/2e32eac650af71e496305a31e166c7b.jpg",
+            "https://files.kretzrealestate.com/53c555959e6acc619bc04278ad663f4d.jpg",
+            "https://files.kretzrealestate.com/5f7c72d3f193c839f279f83d0e45120.jpg",
+            "https://files.kretzrealestate.com/3fb2c8dde0e1dea6796143f859451e22.jpg",
+            "https://files.kretzrealestate.com/4c233c3ef531153257cb666ba86d7c33.jpg",
+            "https://files.kretzrealestate.com/7cd41549e62c5759fee66a07c60e51b.jpg",
+            "https://files.kretzrealestate.com/5d485fe89c5e92fa99479aab222cd9a0.jpg",
+            "https://files.kretzrealestate.com/dbeec4f7ebf697c7261fa9d77a2c70.jpg",
+            "https://files.kretzrealestate.com/48887c9bde396c97e83925ee671a7f6.jpg",
+            "https://files.kretzrealestate.com/9a5ad969e255c9b99613a813990d15f.jpg",
+            "https://files.kretzrealestate.com/d53a39b6153dc1ff1fe4d844fda1ee4e.jpg",
+            "https://files.kretzrealestate.com/62cb38ecaab4b315b649a626c85f240.jpg"
+          ]
+        },
+        "tags": [
+          "Kretz Official Listing",
+          "Aix En Provence",
+          "House"
+        ],
+        "ref": "KP1-11270B",
+        "annonce_url": "https://kretz.site/#/annonce/kp1-11270b/bastide",
+        "tour_url": "https://kretz.site/kretz-tour/en/annonce/kp1-11270b/bastide/",
+        "coordinates": {
+          "lat": 43.5247,
+          "lng": 5.4756
+        },
+        "agent": {
+          "name": "Louis Kretz",
+          "phone": "+33 7 53 07 75 72",
+          "email": "louis@kretz.fr",
+          "photo": "https://files.kretzrealestate.com/46985a975765792df9a9228807e382d5.jpg",
+          "role": "Associate Director - French Riviera"
+        },
+        "is_confidential": false,
+        "is_exclusive": false,
+        "is_off_market": false,
+        "created_at": "2026-08-03T01:03:49.068Z",
+        "updated_at": "2026-10-04T01:03:49.068Z"
+      },
+      "admin_response_at": "2026-10-04T07:55:59.076Z"
+    },
+    {
+      "id": "PR-2026-000002",
+      "user_id": "usr_1791100490692_6vk5",
+      "property_type": "House",
+      "preferred_country": "France",
+      "preferred_state": "Provence-Alpes-Côte-d'Azur",
+      "preferred_city": "Aix En Provence",
+      "preferred_neighborhood": "Aix En Provence (Aix)",
+      "min_size_sqm": 611,
+      "max_size_sqm": 661,
+      "bedrooms": 7,
+      "budget": 4595000,
+      "currency": "EUR",
+      "intended_use": "Residential",
+      "purchase_structure": "Cash",
+      "timeframe": "1 to 3 months",
+      "additional_requirements": "House - Aix En Provence (Aix) (4 595 000 €)",
+      "special_instructions": "Direct acquisition inquiry for registered Kretz asset: Bastide d’exception du 19e vue Sainte-Victoire (Ref: KP1-11270B, Cadastre: Ai000-000-KE-0162, Jurisdiction: Chambre des Notaires de Aix). Title status: Freehold.",
+      "status": "PROPERTY_IDENTIFIED",
+      "created_at": "2026-10-04T07:55:57.659Z",
+      "updated_at": "2026-10-04T07:55:57.884Z",
+      "matched_property_id": "KP1-11270B",
+      "matched_property": {
+        "id": "KP1-11270B",
+        "name": "Bastide d’exception du 19e vue Sainte-Victoire",
+        "slug": "kp1-11270b-bastide",
+        "headline": "House - Aix En Provence (Aix) (4 595 000 €)",
+        "description": "Bastide d’exception du 19e vue Sainte-Victoire\n\nSituated in the prestigious setting of Aix En Provence (Aix), this exceptional provençal mas encompasses approximately 611 m² of refined living space, complemented by 12 magnificent rooms including 7 luxury bedroom suites.\n\nDesigned for sophisticated entertaining and everyday serenity, the residence features expansive open-plan reception spaces, floor-to-ceiling windows inviting abundant natural light, and bespoke high-end finishes throughout. An extraordinary opportunity presented exclusively by Kretz Family Real Estate.",
+        "property_type": "House",
+        "address": "Aix En Provence (Aix)",
+        "city": "Aix En Provence",
+        "state_region": "Provence-Alpes-Côte-d'Azur",
+        "country": "France",
+        "cadastral_id": "Ai000-000-KE-0162",
+        "land_registry_ref": "AIXENP-VOL-2024-P-1062",
+        "asking_price": 4595000,
+        "currency": "EUR",
+        "living_area_sqm": 611,
+        "land_area_sqm": 11000,
+        "bedrooms": 7,
+        "bathrooms": 6,
+        "reception_rooms": 5,
+        "architectural_style": "House",
+        "notary_jurisdiction": "Chambre des Notaires de Aix",
+        "legal_status": "AVAILABLE",
+        "features": [
+          "Provençal Mas",
+          "611 m²"
+        ],
+        "key_amenities": [
+          "Heated Swimming Pool",
+          "Private Balcony",
+          "Landscaped Garden",
+          "Security & Biometric Alarm"
+        ],
+        "legal_title_type": "Freehold",
+        "due_diligence_pack_ready": true,
+        "cadastral_status": "Compliant & Demarcated (Cadastre Officiel DGFiP)",
+        "tax_compliance_status": "Verified (Taxe Foncière, IFI Valuation, Urbanisme Clear)",
+        "energy_rating": "C",
+        "images": {
+          "hero": "https://files.kretzrealestate.com/42f0496fe03d7f9b544b43827966bf3b.jpg",
+          "gallery": [
+            "https://files.kretzrealestate.com/139d6158bc32772122506a9cb3b2f5a9.jpg",
+            "https://files.kretzrealestate.com/de6b718cd4c564b09779513846eff20.jpg",
+            "https://files.kretzrealestate.com/2e32eac650af71e496305a31e166c7b.jpg",
+            "https://files.kretzrealestate.com/53c555959e6acc619bc04278ad663f4d.jpg",
+            "https://files.kretzrealestate.com/5f7c72d3f193c839f279f83d0e45120.jpg",
+            "https://files.kretzrealestate.com/3fb2c8dde0e1dea6796143f859451e22.jpg",
+            "https://files.kretzrealestate.com/4c233c3ef531153257cb666ba86d7c33.jpg",
+            "https://files.kretzrealestate.com/7cd41549e62c5759fee66a07c60e51b.jpg",
+            "https://files.kretzrealestate.com/5d485fe89c5e92fa99479aab222cd9a0.jpg",
+            "https://files.kretzrealestate.com/dbeec4f7ebf697c7261fa9d77a2c70.jpg",
+            "https://files.kretzrealestate.com/48887c9bde396c97e83925ee671a7f6.jpg",
+            "https://files.kretzrealestate.com/9a5ad969e255c9b99613a813990d15f.jpg",
+            "https://files.kretzrealestate.com/d53a39b6153dc1ff1fe4d844fda1ee4e.jpg",
+            "https://files.kretzrealestate.com/62cb38ecaab4b315b649a626c85f240.jpg"
+          ]
+        },
+        "tags": [
+          "Kretz Official Listing",
+          "Aix En Provence",
+          "House"
+        ],
+        "ref": "KP1-11270B",
+        "annonce_url": "https://kretz.site/#/annonce/kp1-11270b/bastide",
+        "tour_url": "https://kretz.site/kretz-tour/en/annonce/kp1-11270b/bastide/",
+        "coordinates": {
+          "lat": 43.5247,
+          "lng": 5.4756
+        },
+        "agent": {
+          "name": "Louis Kretz",
+          "phone": "+33 7 53 07 75 72",
+          "email": "louis@kretz.fr",
+          "photo": "https://files.kretzrealestate.com/46985a975765792df9a9228807e382d5.jpg",
+          "role": "Associate Director - French Riviera"
+        },
+        "is_confidential": false,
+        "is_exclusive": false,
+        "is_off_market": false,
+        "created_at": "2026-08-03T01:03:49.068Z",
+        "updated_at": "2026-10-04T01:03:49.068Z"
+      },
+      "admin_response_at": "2026-10-04T07:55:57.884Z"
+    },
     {
       "id": "PR-2026-000001",
       "user_id": "usr_client_001",
@@ -626,9 +862,126 @@
       "link_url": "/property-request",
       "is_read": false,
       "created_at": "2026-10-04T00:44:47.310Z"
+    },
+    {
+      "id": "notif_1791100490819",
+      "user_id": "usr_1791100490692_6vk5",
+      "title": "Welcome to Kretz Legal Workspace",
+      "message": "Your private legal property transaction workspace has been created. Please complete your property acquisition criteria.",
+      "link_url": "/property-request",
+      "is_read": true,
+      "created_at": "2026-10-04T07:54:50.818Z"
+    },
+    {
+      "id": "notif_1791100557884_3cmz",
+      "user_id": "usr_1791100490692_6vk5",
+      "title": "Property Match Identified by Legal Team",
+      "message": "Your acquisition search has been matched to \"Bastide d’exception du 19e vue Sainte-Victoire\" in Aix En Provence. Review legal details, cadastral survey, and notary pack on your dashboard.",
+      "link_url": "/property-request/PR-2026-000002",
+      "is_read": true,
+      "created_at": "2026-10-04T07:55:57.884Z"
+    },
+    {
+      "id": "notif_1791100559076_xhaa",
+      "user_id": "usr_1791100490692_6vk5",
+      "title": "Property Match Identified by Legal Team",
+      "message": "Your acquisition search has been matched to \"Bastide d’exception du 19e vue Sainte-Victoire\" in Aix En Provence. Review legal details, cadastral survey, and notary pack on your dashboard.",
+      "link_url": "/property-request/PR-2026-000003",
+      "is_read": true,
+      "created_at": "2026-10-04T07:55:59.076Z"
     }
   ],
   "audit_logs": [
+    {
+      "id": "aud_1791100859613_u5ida",
+      "timestamp": "2026-10-04T08:00:59.613Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "LOGOUT",
+      "resource_type": "AUTH",
+      "details": "User logged out of session.",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100559087_tadbg",
+      "timestamp": "2026-10-04T07:55:59.087Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "PROPERTY_MATCHED_TO_REQUEST",
+      "resource_type": "PROPERTY_REQUEST",
+      "resource_id": "PR-2026-000003",
+      "details": "Admin responded to request PR-2026-000003 with Kretz property Bastide d’exception du 19e vue Sainte-Victoire (KP1-11270B). ",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100558849_hil3r",
+      "timestamp": "2026-10-04T07:55:58.849Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "PROPERTY_REQUEST_SUBMITTED",
+      "resource_type": "PROPERTY_REQUEST",
+      "resource_id": "PR-2026-000003",
+      "details": "Property criteria submitted: House in Aix En Provence (4595000 EUR)",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100557894_hi1t5",
+      "timestamp": "2026-10-04T07:55:57.894Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "PROPERTY_MATCHED_TO_REQUEST",
+      "resource_type": "PROPERTY_REQUEST",
+      "resource_id": "PR-2026-000002",
+      "details": "Admin responded to request PR-2026-000002 with Kretz property Bastide d’exception du 19e vue Sainte-Victoire (KP1-11270B). ",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100557660_l73m5",
+      "timestamp": "2026-10-04T07:55:57.660Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "PROPERTY_REQUEST_SUBMITTED",
+      "resource_type": "PROPERTY_REQUEST",
+      "resource_id": "PR-2026-000002",
+      "details": "Property criteria submitted: House in Aix En Provence (4595000 EUR)",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100495778_h5qkr",
+      "timestamp": "2026-10-04T07:54:55.778Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "EMAIL_VERIFIED",
+      "resource_type": "USER",
+      "resource_id": "usr_1791100490692_6vk5",
+      "details": "Email address successfully verified.",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
+    {
+      "id": "aud_1791100490819_er4n3",
+      "timestamp": "2026-10-04T07:54:50.819Z",
+      "user_id": "usr_1791100490692_6vk5",
+      "user_email": "melissamenorsophia@gmail.com",
+      "user_role": "CLIENT",
+      "action": "ACCOUNT_CREATED",
+      "resource_type": "USER",
+      "resource_id": "usr_1791100490692_6vk5",
+      "details": "Client registered: Melissa Sophia (melissamenorsophia@gmail.com)",
+      "ip_address": "102.91.4.41",
+      "result": "SUCCESS"
+    },
     {
       "id": "aud_1791096973241_rvytu",
       "timestamp": "2026-10-04T06:56:13.241Z",
@@ -873,7 +1226,7 @@
     }
   ],
   "counters": {
-    "request": 1,
+    "request": 3,
     "transaction": 1
   },
   "kretz_properties": [
@@ -17334,6 +17687,61 @@
       "is_off_market": false,
       "created_at": "2026-03-12T01:03:49.074Z",
       "updated_at": "2026-10-04T01:03:49.074Z"
+    },
+    {
+      "id": "KP1-98765",
+      "name": "Villa - 98765 Villa Provencale",
+      "slug": "kp1-98765-kp1-98765-villa-provencale",
+      "headline": "Villa - France (98765 Villa Provencale)",
+      "description": "Exceptional luxury residence imported from official kretz.site portfolio (KP1-98765). Comprehensive legal due diligence, title chain verification, and official cadastre clearance prepared.",
+      "property_type": "Villa",
+      "address": "France",
+      "city": "Paris",
+      "state_region": "Île-de-France",
+      "country": "France",
+      "cadastral_id": "75000-000-KP-8765",
+      "land_registry_ref": "PARIS-VOL-2026-P-8765",
+      "asking_price": 4500000,
+      "currency": "EUR",
+      "living_area_sqm": 280,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "reception_rooms": 2,
+      "architectural_style": "Villa",
+      "notary_jurisdiction": "Chambre des Notaires de Paris (1 Boulevard de Sébastopol, 75001 Paris)",
+      "legal_status": "AVAILABLE",
+      "features": [
+        "Imported kretz.site Asset",
+        "Verified Mandate",
+        "Villa"
+      ],
+      "key_amenities": [
+        "Concierge Service",
+        "Security System",
+        "Air Conditioning",
+        "Private Parking"
+      ],
+      "legal_title_type": "Freehold",
+      "due_diligence_pack_ready": true,
+      "cadastral_status": "Compliant & Demarcated (Cadastre DGFiP)",
+      "tax_compliance_status": "Verified (Taxe Foncière, Urbanisme Clear)",
+      "energy_rating": "B",
+      "images": {
+        "hero": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85",
+        "gallery": [
+          "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80"
+        ]
+      },
+      "tags": [
+        "Kretz Official Listing",
+        "Imported from URL",
+        "Villa"
+      ],
+      "ref": "KP1-98765",
+      "annonce_url": "https://kretz.site/#/annonce/kp1-98765/villa-provencale",
+      "created_at": "2026-10-04T08:14:59.671Z",
+      "updated_at": "2026-10-04T08:14:59.671Z"
     }
   ],
   "tracfin_dossiers": [
