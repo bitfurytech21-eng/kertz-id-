@@ -180,15 +180,48 @@ export const MatchedPropertyCard: React.FC<MatchedPropertyCardProps> = ({
               </span>
             </div>
 
-            {onOpenSelector && showActions && (
-              <button
-                onClick={onOpenSelector}
-                className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold shrink-0"
+            <div className="flex items-center gap-2 shrink-0">
+              <a
+                href={property.annonce_url || `https://kretz.site/#/annonce/${(property.ref || '').toLowerCase()}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-400 text-xs font-semibold flex items-center gap-1.5 transition"
               >
-                Change Selected Property
-              </button>
-            )}
+                <span>kretz.site Listing</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              {onOpenSelector && showActions && (
+                <button
+                  onClick={onOpenSelector}
+                  className="text-xs text-amber-400 hover:text-amber-300 underline font-semibold shrink-0"
+                >
+                  Change
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Lead Kretz Family Agent */}
+          {property.agent && (
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={property.agent.photo}
+                  alt={property.agent.name}
+                  className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-xs"
+                />
+                <div>
+                  <div className="font-semibold text-slate-900 leading-none">{property.agent.name}</div>
+                  <span className="text-[10px] text-slate-400">{property.agent.role}</span>
+                </div>
+              </div>
+
+              <div className="font-mono text-xs text-slate-700 font-medium">
+                {property.agent.phone}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

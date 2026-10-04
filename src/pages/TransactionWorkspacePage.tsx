@@ -63,6 +63,7 @@ import { QESSignatureModal } from '../components/QESSignatureModal';
 import { QESProviderIntegrationModule } from '../components/QESProviderIntegrationModule';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorDisplay } from '../components/ErrorDisplay';
+import { safeDownload } from '../utils/safeDownload';
 import { generateTransactionPdf } from '../utils/generateTransactionPdf';
 
 interface TransactionWorkspacePageProps {
@@ -200,9 +201,9 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
   const handleDownloadDoc = async (docId: string) => {
     try {
       const res = await api.documents.getSignedUrl(docId);
-      window.open(res.download_url, '_blank');
+      safeDownload(res.download_url);
     } catch (err: any) {
-      alert('Error downloading document: ' + err.message);
+      console.error('Error downloading document:', err);
     }
   };
 
@@ -434,8 +435,8 @@ export const TransactionWorkspacePage: React.FC<TransactionWorkspacePageProps> =
         <ProgressBar currentStep={transaction.current_step} />
       </div>
 
-      {/* 11 Tabs Navigation */}
-      <div className="border-b border-slate-200 overflow-x-auto scrollbar-thin">
+      {/* 11 Tabs Navigation - Static / Sticky while content scrolls below */}
+      <div className="sticky top-16 z-30 bg-slate-50/95 backdrop-blur-md border-b border-slate-200 overflow-x-auto scrollbar-thin py-1 -mx-4 px-4 sm:mx-0 sm:px-0">
         <nav className="flex space-x-1 min-w-max">
           {TABS.map((tab) => {
             const Icon = tab.icon;

@@ -79,8 +79,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true, // Enables service worker in development / AI Studio preview
-          type: 'module',
+          enabled: false,
         },
       }),
     ],

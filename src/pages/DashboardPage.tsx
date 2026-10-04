@@ -14,13 +14,19 @@ import {
   CheckSquare,
   DollarSign,
   Download,
+  Sparkles,
+  MapPin,
+  ExternalLink,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
-import { PropertyRequest, Transaction, DocumentItem, Notification } from '../types';
+import { PropertyRequest, Transaction, DocumentItem, Notification, KretzProperty } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
 import { ProgressBar } from '../components/ProgressBar';
 import { EmptyState } from '../components/EmptyState';
+import { safeDownload } from '../utils/safeDownload';
+import { KretzPropertySelectorModal } from '../components/KretzPropertySelectorModal';
 
 interface DashboardPageProps {
   navigate: (path: string) => void;
@@ -32,6 +38,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showPortfolioModal, setShowPortfolioModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const clientName = user?.profile
@@ -128,9 +135,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
   const handleDownloadDoc = async (docId: string) => {
     try {
       const res = await api.documents.getSignedUrl(docId);
-      window.open(res.download_url, '_blank');
+      safeDownload(res.download_url);
     } catch (err: any) {
-      alert('Failed to get download URL: ' + err.message);
+      console.error('Failed to get download URL:', err);
     }
   };
 
@@ -156,7 +163,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={() => setShowPortfolioModal(true)}
+            className="px-3.5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs rounded-md shadow-xs transition-colors flex items-center gap-1.5"
+            title="Browse all 207 luxury properties directly from kretz.site"
+          >
+            <Sparkles className="w-4 h-4 text-slate-950" />
+            <span>Explore 207 Kretz Properties</span>
+          </button>
+
           <button
             onClick={() => navigate('/property-request')}
             className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-md shadow-xs transition-colors flex items-center gap-2"
@@ -239,6 +255,112 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
                       </span>
                     </div>
                   </div>
+
+                  {/* ADMIN PROPERTY RESPONSE & MATCH CARD */}
+                  {latestRequest.matched_property && (
+                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase font-mono tracking-wider">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                          <span>Legal Team Property Match & Acquisition Proposal</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+                          Official Match from kretz.site
+                        </span>
+                      </div>
+
+                      <div className="bg-slate-950 text-white rounded-xl p-4 sm:p-5 border border-slate-800 shadow-md space-y-4">
+                        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                          <div className="flex gap-3.5 items-center">
+                            <img
+                              src={latestRequest.matched_property.images?.hero}
+                              alt={latestRequest.matched_property.name}
+                              className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover border border-slate-700 shrink-0"
+                            />
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-amber-400 border border-slate-700">
+                                  {latestRequest.matched_property.ref || latestRequest.matched_property.id}
+                                </span>
+                                <span className="text-[11px] text-slate-400 font-mono">
+                                  {latestRequest.matched_property.property_type}
+                                </span>
+                              </div>
+                              <h3 className="font-bold text-sm sm:text-base text-white">
+                                {latestRequest.matched_property.name}
+                              </h3>
+                              <div className="text-xs text-slate-400 flex items-center gap-2">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                <span>{latestRequest.matched_property.city}, {latestRequest.matched_property.state_region}</span>
+                                <span>•</span>
+                                <span>{latestRequest.matched_property.living_area_sqm} m²</span>
+                                <span>•</span>
+                                <span>{latestRequest.matched_property.bedrooms} beds</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="sm:text-right space-y-2 w-full sm:w-auto">
+                            <div className="font-mono text-xl font-bold text-amber-400">
+                              €{latestRequest.matched_property.asking_price.toLocaleString()}
+                            </div>
+                            <div className="flex sm:justify-end gap-2">
+                              {latestRequest.matched_property.annonce_url && (
+                                <a
+                                  href={latestRequest.matched_property.annonce_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg transition flex items-center gap-1.5"
+                                >
+                                  <span>kretz.site</span>
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                              <button
+                                onClick={() => navigate(`/property-request/${latestRequest.id}`)}
+                                className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                              >
+                                <span>Review Acquisition File</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Admin Counsel Notes */}
+                        {latestRequest.admin_notes && (
+                          <div className="p-3.5 bg-slate-900/90 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                            <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px] uppercase tracking-wider font-mono">
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>Legal Counsel & Agent Recommendation:</span>
+                            </div>
+                            <p className="whitespace-pre-line leading-relaxed text-slate-200">
+                              {latestRequest.admin_notes}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Agent Info */}
+                        {latestRequest.matched_property.agent && (
+                          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={latestRequest.matched_property.agent.photo}
+                                alt={latestRequest.matched_property.agent.name}
+                                className="w-6 h-6 rounded-full object-cover border border-slate-700"
+                              />
+                              <span className="text-white font-medium">
+                                Lead Agent: {latestRequest.matched_property.agent.name}
+                              </span>
+                            </div>
+                            <span className="font-mono text-slate-400">
+                              {latestRequest.matched_property.agent.phone}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <EmptyState
@@ -402,8 +524,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
           </div>
         </div>
 
-        {/* Right 1 Col: Tasks & Notifications */}
-        <div className="space-y-8">
+        {/* Right 1 Col: Tasks & Notifications - Sticky/Static while left content scrolls */}
+        <div className="space-y-8 lg:sticky lg:top-24 self-start">
           {/* SECTION 4: REQUIRED TASKS */}
           <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
@@ -494,6 +616,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ navigate }) => {
           </div>
         </div>
       </div>
+
+      {/* Explore 207 Kretz Properties Portfolio Modal */}
+      <KretzPropertySelectorModal
+        isOpen={showPortfolioModal}
+        onClose={() => setShowPortfolioModal(false)}
+        onSelectProperty={(p) => {
+          setShowPortfolioModal(false);
+          navigate(`/property-request?property_id=${p.id}`);
+        }}
+      />
     </div>
   );
 };

@@ -96,9 +96,7 @@ app.use(cookieParser());
 // Security headers & HSTS
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   next();
 });
 
@@ -181,6 +179,8 @@ function sanitizeUser(user: User, profile?: UserProfile) {
           phone_number: profile.phone_number,
           country: profile.country,
           state: profile.state,
+          date_of_birth: profile.date_of_birth,
+          target_closing_date: profile.target_closing_date,
           kyc_status: profile.kyc_status,
         }
       : null,
@@ -193,7 +193,7 @@ function sanitizeUser(user: User, profile?: UserProfile) {
 
 // Register
 app.post('/api/auth/register', (req: Request, res: Response) => {
-  const { first_name, last_name, email, phone_number, password, country, state, terms_accepted } = req.body;
+  const { first_name, last_name, email, phone_number, password, country, state, date_of_birth, target_closing_date, terms_accepted } = req.body;
 
   if (!email || !password || !first_name || !last_name) {
     return res.status(400).json({ error: 'Please provide all required registration fields.' });
@@ -239,6 +239,8 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
     phone_number: phone_number?.trim() || '',
     country: country?.trim() || '',
     state: state?.trim() || '',
+    date_of_birth: date_of_birth?.trim() || undefined,
+    target_closing_date: target_closing_date?.trim() || undefined,
     kyc_status: 'PENDING',
     terms_accepted_at: now,
     created_at: now,
@@ -567,10 +569,10 @@ app.post('/api/properties/sync-kretz', authenticateJWT, (req: AuthenticatedReque
   });
 });
 
-// Match / Link Registered Property to a Property Request
+// Match / Link Registered Property to a Property Request (Admin / Legal Response)
 app.post('/api/property-requests/:id/match-property', authenticateJWT, (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
-  const { property_id } = req.body;
+  const { property_id, admin_notes } = req.body;
   if (!property_id) {
     return res.status(400).json({ error: 'property_id is required.' });
   }
@@ -593,10 +595,26 @@ app.post('/api/property-requests/:id/match-property', authenticateJWT, (req: Aut
 
   requestItem.matched_property_id = property.id;
   requestItem.matched_property = property;
+  if (admin_notes !== undefined) {
+    requestItem.admin_notes = admin_notes.trim();
+  }
+  requestItem.admin_response_at = new Date().toISOString();
   if (['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'].includes(requestItem.status)) {
     requestItem.status = 'PROPERTY_IDENTIFIED';
   }
   requestItem.updated_at = new Date().toISOString();
+
+  // Create notification for client
+  db.notifications.push({
+    id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    user_id: requestItem.user_id,
+    title: 'Property Match Identified by Legal Team',
+    message: `Your acquisition search has been matched to "${property.name}" in ${property.city}. Review legal details, cadastral survey, and notary pack on your dashboard.`,
+    link_url: `/property-request/${requestItem.id}`,
+    is_read: false,
+    created_at: new Date().toISOString(),
+  });
+
   saveDB();
 
   logAudit({
@@ -606,13 +624,13 @@ app.post('/api/property-requests/:id/match-property', authenticateJWT, (req: Aut
     action: 'PROPERTY_MATCHED_TO_REQUEST',
     resource_type: 'PROPERTY_REQUEST',
     resource_id: requestItem.id,
-    details: `Attached Kretz property ${property.name} (${property.id}) to acquisition request ${requestItem.id}`,
+    details: `Admin responded to request ${requestItem.id} with Kretz property ${property.name} (${property.id}). ${admin_notes ? `Notes: ${admin_notes}` : ''}`,
     ip_address: getClientIP(req),
     result: 'SUCCESS',
   });
 
   return res.json({
-    message: `Property ${property.name} successfully linked to your acquisition file.`,
+    message: `Property "${property.name}" successfully matched to buyer request.`,
     request: requestItem,
     property,
   });
@@ -3272,30 +3290,6 @@ app.get(
     return res.json({ logs: logs.slice(0, max) });
   },
 );
-
-// ==========================================
-// DIRECT ANDROID APK DOWNLOAD
-// ==========================================
-app.get(['/download/kretz-legal.apk', '/api/download-apk'], (_req, res) => {
-  const primaryApk = path.resolve(__dirname, 'public', 'kretz-legal.apk');
-  const distApk = path.resolve(__dirname, 'dist', 'kretz-legal.apk');
-  const buildApk = path.resolve(__dirname, 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk');
-
-  const targetPath = fs.existsSync(primaryApk)
-    ? primaryApk
-    : fs.existsSync(distApk)
-    ? distApk
-    : fs.existsSync(buildApk)
-    ? buildApk
-    : null;
-
-  if (targetPath) {
-    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-    res.setHeader('Content-Disposition', 'attachment; filename="kretz-legal.apk"');
-    return res.sendFile(targetPath);
-  }
-  return res.status(404).json({ error: 'APK file not found.' });
-});
 
 // ==========================================
 // VITE SPA INTEGRATION & SERVER START

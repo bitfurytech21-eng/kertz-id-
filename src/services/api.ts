@@ -38,24 +38,6 @@ export function getAuthToken(): string | null {
   return cachedToken;
 }
 
-function resolveApiUrl(endpoint: string): string {
-  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-    return endpoint;
-  }
-  // If running inside Capacitor Android app or mobile standalone shell
-  const isCapacitor =
-    typeof window !== 'undefined' &&
-    (window.location.protocol === 'capacitor:' ||
-      window.location.hostname === 'localhost' ||
-      window.location.hostname === 'site.kretz.legal');
-
-  if (isCapacitor) {
-    const base = import.meta.env.VITE_API_URL || 'https://idverify.kretz.site';
-    return `${base.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
-  }
-  return endpoint;
-}
-
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers || {});
   headers.set('X-Requested-With', 'XMLHttpRequest');
@@ -68,8 +50,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     headers.set('Content-Type', 'application/json');
   }
 
-  const url = resolveApiUrl(endpoint);
-  const res = await fetch(url, {
+  const res = await fetch(endpoint, {
     ...options,
     headers,
   });
@@ -108,6 +89,8 @@ export const api = {
       password: string;
       country: string;
       state: string;
+      date_of_birth?: string;
+      target_closing_date?: string;
       terms_accepted: boolean;
     }) => {
       const data = await request<{
@@ -197,12 +180,12 @@ export const api = {
       });
     },
 
-    matchToRequest: async (requestId: string, propertyId: string) => {
+    matchToRequest: async (requestId: string, propertyId: string, adminNotes?: string) => {
       return request<{ message: string; request: PropertyRequest; property: KretzProperty }>(
         `/api/property-requests/${encodeURIComponent(requestId)}/match-property`,
         {
           method: 'POST',
-          body: JSON.stringify({ property_id: propertyId }),
+          body: JSON.stringify({ property_id: propertyId, admin_notes: adminNotes }),
         }
       );
     },
@@ -230,6 +213,16 @@ export const api = {
         method: 'PATCH',
         body: JSON.stringify(payload),
       });
+    },
+
+    matchProperty: async (id: string, propertyId: string, adminNotes?: string) => {
+      return request<{ message: string; request: PropertyRequest; property: KretzProperty }>(
+        `/api/property-requests/${encodeURIComponent(id)}/match-property`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ property_id: propertyId, admin_notes: adminNotes }),
+        }
+      );
     },
 
     convertToTransaction: async (

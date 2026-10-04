@@ -71,22 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ navigate }) => {
               >
                 Go to Workspace Dashboard <ArrowRight className="w-4 h-4 text-slate-950" />
               </button>
-            ) : (
-              <>
-                <button
-                  onClick={() => navigate('/register')}
-                  className="px-6 py-3 bg-white text-slate-950 font-semibold text-sm rounded-lg hover:bg-slate-100 shadow-xl shadow-white/5 active:scale-[0.99] transition-all flex items-center gap-2 border border-white"
-                >
-                  Create Client Account <ArrowRight className="w-4 h-4 text-slate-950" />
-                </button>
-                <button
-                  onClick={() => navigate('/login')}
-                  className="px-6 py-3 bg-slate-900/85 text-white font-semibold text-sm rounded-lg hover:bg-slate-800 border border-slate-700/80 backdrop-blur-sm shadow-md active:scale-[0.99] transition-all"
-                >
-                  Sign In to Workspace
-                </button>
-              </>
-            )}
+            ) : null}
           </div>
         </div>
       </section>

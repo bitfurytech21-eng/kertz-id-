@@ -14,6 +14,8 @@ interface AuthContextType {
     password: string;
     country: string;
     state: string;
+    date_of_birth?: string;
+    target_closing_date?: string;
     terms_accepted: boolean;
   }) => Promise<{ verificationCode?: string }>;
   verifyEmail: (code: string, email?: string) => Promise<void>;
@@ -79,6 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password: string;
     country: string;
     state: string;
+    date_of_birth?: string;
+    target_closing_date?: string;
     terms_accepted: boolean;
   }) => {
     setIsLoading(true);

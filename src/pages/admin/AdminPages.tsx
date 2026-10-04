@@ -16,6 +16,7 @@ import {
   ArrowRight,
   ExternalLink,
   Plus,
+  Sparkles,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import {
@@ -28,10 +29,12 @@ import {
   AuditLog,
 } from '../../types';
 import { StatusBadge } from '../../components/StatusBadge';
+import { safeDownload } from '../../utils/safeDownload';
 import { useAuth } from '../../context/AuthContext';
 import { DocumentVersionModal } from '../../components/DocumentVersionModal';
 import { EmptyState } from '../../components/EmptyState';
 import { ErrorDisplay } from '../../components/ErrorDisplay';
+import { AdminPropertySearchResponderModal } from '../../components/AdminPropertySearchResponderModal';
 
 // ==========================================
 // 1. ADMIN DASHBOARD
@@ -91,7 +94,22 @@ export const AdminDashboard: React.FC<{ navigate: (path: string) => void }> = ({
       )}
 
       {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <button
+          onClick={() => navigate('/admin/property-requests')}
+          className="p-5 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-300 hover:border-amber-400 rounded-xl shadow-xs text-left transition-all space-y-2 group"
+        >
+          <div className="w-9 h-9 bg-amber-400 text-slate-950 rounded-lg flex items-center justify-center">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <h3 className="font-bold text-sm text-slate-900 group-hover:text-amber-900">
+            Search Responder
+          </h3>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Match 207 listings from kretz.site to client searches.
+          </p>
+        </button>
+
         <button
           onClick={() => navigate('/admin/property-requests')}
           className="p-5 bg-white border border-slate-200 hover:border-slate-300 rounded-xl shadow-xs text-left transition-all space-y-2 group"
@@ -262,6 +280,7 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [convertModalRequest, setConvertModalRequest] = useState<PropertyRequest | null>(null);
+  const [responderRequest, setResponderRequest] = useState<PropertyRequest | null>(null);
   const [propName, setPropName] = useState('');
   const [propAddress, setPropAddress] = useState('');
   const [agreedPrice, setAgreedPrice] = useState('');
@@ -355,21 +374,40 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
                     {r.purchase_structure} ({r.timeframe})
                   </td>
                   <td className="py-3.5 px-4">
-                    <StatusBadge status={r.status} size="sm" />
+                    <div className="space-y-1">
+                      <StatusBadge status={r.status} size="sm" />
+                      {r.matched_property && (
+                        <div className="flex items-center gap-1 text-[10px] text-emerald-800 font-medium">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                          <span className="truncate max-w-[130px] font-mono">
+                            {r.matched_property.ref || r.matched_property.id}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </td>
-                  <td className="py-3.5 px-4 text-right space-x-2">
+                  <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                    <button
+                      onClick={() => setResponderRequest(r)}
+                      className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded shadow-xs text-xs inline-flex items-center gap-1 transition"
+                      title="Search 207 Kretz properties and respond to client"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{r.matched_property ? 'Update Match' : 'Respond with Property'}</span>
+                    </button>
+
                     <button
                       onClick={() => navigate(`/property-request/${r.id}`)}
-                      className="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded text-slate-700 font-medium"
+                      className="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded text-slate-700 font-medium text-xs"
                     >
                       View
                     </button>
                     {r.status !== 'TRANSACTION_STARTED' && r.status !== 'COMPLETED' && (
                       <button
                         onClick={() => handleOpenConvert(r)}
-                        className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded shadow-xs"
+                        className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded shadow-xs text-xs"
                       >
-                        Start Transaction
+                        Start Tx
                       </button>
                     )}
                   </td>
@@ -379,6 +417,14 @@ export const AdminPropertyRequests: React.FC<{ navigate: (path: string) => void 
           </table>
         </div>
       </div>
+
+      {/* Property Search Responder Modal (207 Kretz listings from kretz.site) */}
+      <AdminPropertySearchResponderModal
+        isOpen={!!responderRequest}
+        onClose={() => setResponderRequest(null)}
+        request={responderRequest}
+        onResponseSent={fetchRequests}
+      />
 
       {/* Convert to Transaction Modal */}
       {convertModalRequest && (
@@ -491,9 +537,9 @@ export const AdminDocuments: React.FC<{ navigate: (path: string) => void }> = ()
   const handleDownload = async (docId: string) => {
     try {
       const res = await api.documents.getSignedUrl(docId);
-      window.open(res.download_url, '_blank');
+      safeDownload(res.download_url);
     } catch (err: any) {
-      alert('Download error: ' + err.message);
+      console.error('Download error:', err);
     }
   };
 

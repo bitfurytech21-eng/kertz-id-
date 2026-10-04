@@ -29,6 +29,8 @@ export interface UserProfile {
   phone_number: string;
   country: string;
   state: string;
+  date_of_birth?: string;
+  target_closing_date?: string;
   kyc_status: 'PENDING' | 'VERIFIED' | 'REJECTED';
   terms_accepted_at: string;
   created_at: string;
@@ -57,6 +59,8 @@ export interface PropertyRequest {
   assigned_officer_id?: string;
   matched_property_id?: string;
   matched_property?: KretzProperty;
+  admin_notes?: string;
+  admin_response_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -545,7 +549,7 @@ export function loadDB(): DatabaseSchema {
     try {
       const data = fs.readFileSync(DB_FILE, 'utf-8');
       dbCache = JSON.parse(data);
-      if (!dbCache!.kretz_properties || dbCache!.kretz_properties.length === 0) {
+      if (!dbCache!.kretz_properties || dbCache!.kretz_properties.length < KRETZ_PROPERTIES_DATABASE.length) {
         dbCache!.kretz_properties = KRETZ_PROPERTIES_DATABASE;
       }
       if (!dbCache!.tracfin_dossiers) {

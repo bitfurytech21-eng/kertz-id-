@@ -6,6 +6,8 @@ export interface UserProfile {
   phone_number: string;
   country: string;
   state: string;
+  date_of_birth?: string;
+  target_closing_date?: string;
   kyc_status: 'PENDING' | 'VERIFIED' | 'REJECTED';
 }
 
@@ -55,6 +57,21 @@ export interface KretzProperty {
     gallery: string[];
   };
   tags: string[];
+  ref?: string;
+  annonce_url?: string;
+  tour_url?: string;
+  video_url?: string;
+  coordinates?: { lat: number; lng: number };
+  agent?: {
+    name: string;
+    phone: string;
+    email: string;
+    photo: string;
+    role: string;
+  };
+  is_confidential?: boolean;
+  is_exclusive?: boolean;
+  is_off_market?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -84,6 +101,8 @@ export interface PropertyRequest {
   associated_transaction_id?: string;
   matched_property_id?: string;
   matched_property?: KretzProperty;
+  admin_notes?: string;
+  admin_response_at?: string;
   created_at: string;
   updated_at: string;
 }

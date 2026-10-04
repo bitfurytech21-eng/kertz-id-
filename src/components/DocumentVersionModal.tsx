@@ -15,6 +15,7 @@ import {
 import { DocumentItem, DocumentVersion } from '../types';
 import { api } from '../services/api';
 import { StatusBadge } from './StatusBadge';
+import { safeDownload } from '../utils/safeDownload';
 
 interface DocumentVersionModalProps {
   isOpen: boolean;
@@ -66,9 +67,9 @@ export const DocumentVersionModal: React.FC<DocumentVersionModalProps> = ({
   const handleDownloadVersion = async (version: DocumentVersion) => {
     try {
       const res = await api.documents.getVersionSignedUrl(version.id);
-      window.open(res.download_url, '_blank');
+      safeDownload(res.download_url);
     } catch (err: any) {
-      alert('Error obtaining signed download token: ' + err.message);
+      console.error('Error obtaining signed download token:', err);
     }
   };
 

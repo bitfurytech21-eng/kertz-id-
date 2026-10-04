@@ -270,6 +270,22 @@ export const PropertyRequestViewPage: React.FC<PropertyRequestViewPageProps> = (
             </div>
           )}
 
+          {request.admin_notes && (
+            <div className="pt-2 text-xs">
+              <span className="text-amber-800 font-bold block text-[11px] uppercase tracking-wider font-mono">
+                Legal Team & Agent Counsel Response
+              </span>
+              <div className="p-4 bg-amber-50/80 border border-amber-200 rounded-lg text-slate-800 leading-relaxed mt-1 space-y-1">
+                <p className="whitespace-pre-line">{request.admin_notes}</p>
+                {request.admin_response_at && (
+                  <span className="text-[10px] text-slate-400 block pt-1 font-mono">
+                    Dispatched on {new Date(request.admin_response_at).toLocaleString()}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {request.special_instructions && (
             <div className="pt-2 text-xs">
               <span className="text-slate-500 block text-[11px]">Special Legal Instructions</span>
